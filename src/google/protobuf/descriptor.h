@@ -41,7 +41,7 @@
 
 #include "google/protobuf/stubs/common.h"
 #include "absl/base/attributes.h"
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/functional/any_invocable.h"
@@ -238,7 +238,7 @@ class PROTOBUF_EXPORT LazyDescriptor {
 
   const Descriptor* descriptor_;
   // The once_ flag is followed by a NUL terminated string for the type name.
-  absl::once_flag* once_;
+  std::once_flag* once_;
 };
 
 class PROTOBUF_EXPORT SymbolBase {
@@ -1137,7 +1137,7 @@ class PROTOBUF_EXPORT FieldDescriptor : private internal::SymbolBase,
 
   // The once_flag is followed by a NUL terminated string for the type name and
   // enum default value (or empty string if no default enum).
-  absl::once_flag* type_once_;
+  std::once_flag* type_once_;
   static void TypeOnceInit(const FieldDescriptor* to_init);
   void InternalTypeOnceInit() const;
   const Descriptor* containing_type_;
@@ -1995,7 +1995,7 @@ class PROTOBUF_EXPORT FileDescriptor : private internal::SymbolBase {
   // dependencies_once_ contain a once_flag followed by N NUL terminated
   // strings. Dependencies that do not need to be loaded will be empty. ie just
   // {'\0'}
-  absl::once_flag* dependencies_once_;
+  std::once_flag* dependencies_once_;
   static void DependenciesOnceInit(const FileDescriptor* to_init);
   void InternalDependenciesOnceInit() const;
 

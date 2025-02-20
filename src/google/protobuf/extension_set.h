@@ -27,7 +27,7 @@
 #include <vector>
 
 #include "google/protobuf/stubs/common.h"
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/base/casts.h"
 #include "absl/base/prefetch.h"
 #include "absl/container/btree_map.h"

@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/base/optimization.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
@@ -164,7 +164,7 @@ Metadata Message::GetMetadataImpl(const internal::ClassDataFull& data) {
     if (ABSL_PREDICT_FALSE(data.get_metadata_tracker != nullptr)) {
       data.get_metadata_tracker();
     }
-    absl::call_once(*table->once, [table] {
+    std::call_once(*table->once, [table] {
       internal::AssignDescriptorsOnceInnerCall(table);
     });
   }

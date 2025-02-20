@@ -107,7 +107,7 @@ static const ::_pbi::DescriptorTable* const descriptor_table_google_2fprotobuf_2
     {
         &::descriptor_table_google_2fprotobuf_2fdescriptor_2eproto,
 };
-static ::absl::once_flag descriptor_table_google_2fprotobuf_2fcompiler_2fjava_2fjava_5ffeatures_2eproto_once;
+static ::std::once_flag descriptor_table_google_2fprotobuf_2fcompiler_2fjava_2fjava_5ffeatures_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_google_2fprotobuf_2fcompiler_2fjava_2fjava_5ffeatures_2eproto = {
     false,
     false,

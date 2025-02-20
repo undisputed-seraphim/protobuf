@@ -20,7 +20,7 @@
 #include <cstdint>
 #include <string>
 
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/log/absl_check.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/generated_enum_reflection.h"
@@ -302,7 +302,7 @@ struct PROTOBUF_EXPORT DescriptorTable {
   int size;  // of serialized descriptor
   const char* descriptor;
   const char* filename;
-  absl::once_flag* once;
+  std::once_flag* once;
   const DescriptorTable* const* deps;
   int num_deps;
   int num_messages;

@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/base/casts.h"
 #include "absl/base/const_init.h"
 #include "absl/base/dynamic_annotations.h"
@@ -1252,7 +1252,7 @@ class FileDescriptorTables {
   bool AddEnumValueByNumber(EnumValueDescriptor* value);
 
   // Populates p->first->locations_by_path_ from p->second.
-  // Unusual signature dictated by absl::call_once.
+  // Unusual signature dictated by std::call_once.
   static void BuildLocationsByPath(
       std::pair<const FileDescriptorTables*, const SourceCodeInfo*>* p);
 
@@ -1277,8 +1277,8 @@ class FileDescriptorTables {
   void FieldsByCamelcaseNamesLazyInitInternal() const;
 
   SymbolsByParentSet symbols_by_parent_;
-  mutable absl::once_flag fields_by_lowercase_name_once_;
-  mutable absl::once_flag fields_by_camelcase_name_once_;
+  mutable std::once_flag fields_by_lowercase_name_once_;
+  mutable std::once_flag fields_by_camelcase_name_once_;
   // Make these fields atomic to avoid race conditions with
   // GetEstimatedOwnedMemoryBytesSize. Once the pointer is set the map won't
   // change anymore.
@@ -1290,7 +1290,7 @@ class FileDescriptorTables {
       ABSL_GUARDED_BY(unknown_enum_values_mu_);
 
   // Populated on first request to save space, hence constness games.
-  mutable absl::once_flag locations_by_path_once_;
+  mutable std::once_flag locations_by_path_once_;
   mutable LocationsByPathMap locations_by_path_;
 
   // Mutex to protect the unknown-enum-value map due to dynamic
@@ -1791,7 +1791,7 @@ void FileDescriptorTables::FieldsByLowercaseNamesLazyInitInternal() const {
 
 inline const FieldDescriptor* FileDescriptorTables::FindFieldByLowercaseName(
     const void* parent, std::string_view lowercase_name) const {
-  absl::call_once(fields_by_lowercase_name_once_,
+  std::call_once(fields_by_lowercase_name_once_,
                   &FileDescriptorTables::FieldsByLowercaseNamesLazyInitStatic,
                   this);
   const auto* fields =
@@ -1824,7 +1824,7 @@ void FileDescriptorTables::FieldsByCamelcaseNamesLazyInitInternal() const {
 
 inline const FieldDescriptor* FileDescriptorTables::FindFieldByCamelcaseName(
     const void* parent, std::string_view camelcase_name) const {
-  absl::call_once(fields_by_camelcase_name_once_,
+  std::call_once(fields_by_camelcase_name_once_,
                   FileDescriptorTables::FieldsByCamelcaseNamesLazyInitStatic,
                   this);
   auto* fields = fields_by_camelcase_name_.load(std::memory_order_acquire);
@@ -2051,7 +2051,7 @@ const SourceCodeInfo_Location* FileDescriptorTables::GetSourceLocation(
     const std::vector<int>& path, const SourceCodeInfo* info) const {
   std::pair<const FileDescriptorTables*, const SourceCodeInfo*> p(
       std::make_pair(this, info));
-  absl::call_once(locations_by_path_once_,
+  std::call_once(locations_by_path_once_,
                   FileDescriptorTables::BuildLocationsByPath, &p);
   auto it = locations_by_path_.find(absl::StrJoin(path, ","));
   if (it == locations_by_path_.end()) return nullptr;
@@ -6062,8 +6062,8 @@ FileDescriptor* DescriptorBuilder::BuildFileImpl(
     }
 
     void* data = tables_->AllocateBytes(
-        static_cast<int>(sizeof(absl::once_flag)) + total_char_size);
-    result->dependencies_once_ = ::new (data) absl::once_flag{};
+        static_cast<int>(sizeof(std::once_flag)) + total_char_size);
+    result->dependencies_once_ = ::new (data) std::once_flag{};
     char* name_data = reinterpret_cast<char*>(result->dependencies_once_ + 1);
 
     for (int i = 0; i < proto.dependency_size(); i++) {
@@ -7504,8 +7504,8 @@ void DescriptorBuilder::CrossLinkField(FieldDescriptor* field,
                                           proto.default_value().size() + 1);
 
         field->type_once_ = ::new (tables_->AllocateBytes(
-            static_cast<int>(sizeof(absl::once_flag)) + name_sizes))
-            absl::once_flag{};
+            static_cast<int>(sizeof(std::once_flag)) + name_sizes))
+            std::once_flag{};
         char* names = reinterpret_cast<char*>(field->type_once_ + 1);
 
         memcpy(names, name.c_str(), name.size() + 1);
@@ -9671,12 +9671,12 @@ void FieldDescriptor::TypeOnceInit(const FieldDescriptor* to_init) {
 }
 
 // message_type(), enum_type(), default_value_enum(), and type()
-// all share the same absl::call_once init path to do lazy
+// all share the same std::call_once init path to do lazy
 // import building and cross linking of a field of a message.
 const Descriptor* FieldDescriptor::message_type() const {
   if (type_ == TYPE_MESSAGE || type_ == TYPE_GROUP) {
     if (type_once_) {
-      absl::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
+      std::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
     }
     return type_descriptor_.message_type;
   }
@@ -9686,7 +9686,7 @@ const Descriptor* FieldDescriptor::message_type() const {
 const EnumDescriptor* FieldDescriptor::enum_type() const {
   if (type_ == TYPE_ENUM) {
     if (type_once_) {
-      absl::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
+      std::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
     }
     return type_descriptor_.enum_type;
   }
@@ -9695,7 +9695,7 @@ const EnumDescriptor* FieldDescriptor::enum_type() const {
 
 const EnumValueDescriptor* FieldDescriptor::default_value_enum() const {
   if (type_once_) {
-    absl::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
+    std::call_once(*type_once_, FieldDescriptor::TypeOnceInit, this);
   }
   return default_value_enum_;
 }
@@ -9729,8 +9729,8 @@ void FileDescriptor::DependenciesOnceInit(const FileDescriptor* to_init) {
 const FileDescriptor* FileDescriptor::dependency(int index) const {
   if (dependencies_once_) {
     // Do once init for all indices, as it's unlikely only a single index would
-    // be called, and saves on absl::call_once allocations.
-    absl::call_once(*dependencies_once_, FileDescriptor::DependenciesOnceInit,
+    // be called, and saves on std::call_once allocations.
+    std::call_once(*dependencies_once_, FileDescriptor::DependenciesOnceInit,
                     this);
   }
   return dependencies_[index];
@@ -9759,7 +9759,7 @@ void LazyDescriptor::SetLazy(std::string_view name,
   ABSL_CHECK(file->pool_->lazily_build_dependencies_);
   ABSL_CHECK(!file->finished_building_);
   once_ = ::new (file->pool_->tables_->AllocateBytes(static_cast<int>(
-      sizeof(absl::once_flag) + name.size() + 1))) absl::once_flag{};
+      sizeof(std::once_flag) + name.size() + 1))) std::once_flag{};
   char* lazy_name = reinterpret_cast<char*>(once_ + 1);
   memcpy(lazy_name, name.data(), name.size());
   lazy_name[name.size()] = 0;
@@ -9767,7 +9767,7 @@ void LazyDescriptor::SetLazy(std::string_view name,
 
 void LazyDescriptor::Once(const ServiceDescriptor* service) {
   if (once_) {
-    absl::call_once(*once_, [&] {
+    std::call_once(*once_, [&] {
       auto* file = service->file();
       ABSL_CHECK(file->finished_building_);
       const char* lazy_name = reinterpret_cast<const char*>(once_ + 1);

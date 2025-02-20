@@ -1338,7 +1338,7 @@ void FileGenerator::GenerateReflectionInitializationCode(io::Printer* p) {
           {"num_msgs", message_generators_.size()},
       },
       R"cc(
-        static ::absl::once_flag $desc_table$_once;
+        static ::std::once_flag $desc_table$_once;
         PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable $desc_table$ = {
             false,
             $eager$,

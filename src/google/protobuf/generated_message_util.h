@@ -29,7 +29,7 @@
 #include <vector>
 
 #include "google/protobuf/stubs/common.h"
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/base/casts.h"
 #include <string_view>
 #include <optional>

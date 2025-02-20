@@ -97,7 +97,7 @@ const char descriptor_table_protodef_google_2fprotobuf_2fany_2eproto[] ABSL_ATTR
     "anypb\242\002\003GPB\252\002\036Google.Protobuf.WellKnownT"
     "ypesb\006proto3"
 };
-static ::absl::once_flag descriptor_table_google_2fprotobuf_2fany_2eproto_once;
+static ::std::once_flag descriptor_table_google_2fprotobuf_2fany_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_google_2fprotobuf_2fany_2eproto = {
     false,
     false,

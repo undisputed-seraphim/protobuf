@@ -95,7 +95,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/base/call_once.h"
+#include <mutex>
 #include "absl/base/macros.h"
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
@@ -1073,12 +1073,12 @@ class PROTOBUF_EXPORT Reflection final {
   // The table-driven parser table.
   // This table is generated on demand for Message types that did not override
   // _InternalParse. It uses the reflection information to do so.
-  mutable absl::once_flag tcparse_table_once_;
+  mutable std::once_flag tcparse_table_once_;
   using TcParseTableBase = internal::TcParseTableBase;
   mutable const TcParseTableBase* tcparse_table_ = nullptr;
 
   const TcParseTableBase* GetTcParseTable() const {
-    absl::call_once(tcparse_table_once_,
+    std::call_once(tcparse_table_once_,
                     [&] { tcparse_table_ = CreateTcParseTable(); });
     return tcparse_table_;
   }
