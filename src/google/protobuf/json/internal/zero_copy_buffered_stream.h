@@ -105,7 +105,7 @@ class MaybeOwnedString {
     size_t start, len;
     std::string_view AsView() const;
   };
-  absl::variant<std::string, StreamOwned> data_;
+  std::variant<std::string, StreamOwned> data_;
   BufferingGuard token_;
 };
 

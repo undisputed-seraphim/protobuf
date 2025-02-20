@@ -32,7 +32,7 @@
 #include "absl/strings/strip.h"
 #include <optional>
 #include "absl/types/span.h"
-#include "absl/types/variant.h"
+#include <variant>
 
 namespace google {
 namespace protobuf {
