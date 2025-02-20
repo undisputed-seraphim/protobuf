@@ -33,7 +33,7 @@
 #include "absl/log/absl_log.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/internal/resize_uninitialized.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/arena.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -65,7 +65,7 @@ inline bool NextNonEmpty(ZeroCopyInputStream* input, const void** data,
 }
 
 inline uint8_t* CopyCordToArray(const absl::Cord& cord, uint8_t* target) {
-  for (absl::string_view sv : cord.Chunks()) {
+  for (std::string_view sv : cord.Chunks()) {
     memcpy(target, sv.data(), sv.size());
     target += sv.size();
   }
@@ -316,7 +316,7 @@ bool CodedInputStream::ReadCord(absl::Cord* output, int size) {
   // or if we are not sourcing data from an input stream.
   if (input_ == nullptr || size < kMaxCordBytesToCopy) {
     // Just copy the current buffer into the output rather than backing up.
-    absl::string_view buffer(reinterpret_cast<const char*>(buffer_),
+    std::string_view buffer(reinterpret_cast<const char*>(buffer_),
                              static_cast<size_t>(std::min(size, BufferSize())));
     *output = buffer;
     Advance(static_cast<int>(buffer.size()));
@@ -1002,7 +1002,7 @@ uint8_t* EpsCopyOutputStream::WriteStringOutline(uint32_t num, const std::string
   return WriteRaw(s.data(), size, ptr);
 }
 
-uint8_t* EpsCopyOutputStream::WriteStringOutline(uint32_t num, absl::string_view s,
+uint8_t* EpsCopyOutputStream::WriteStringOutline(uint32_t num, std::string_view s,
                                                uint8_t* ptr) {
   ptr = EnsureSpace(ptr);
   uint32_t size = s.size();

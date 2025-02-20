@@ -33,7 +33,7 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
 #include "google/protobuf/io/strtod.h"
@@ -51,7 +51,7 @@ namespace compiler {
 namespace {
 
 using TypeNameMap =
-    absl::flat_hash_map<absl::string_view, FieldDescriptorProto::Type>;
+    absl::flat_hash_map<std::string_view, FieldDescriptorProto::Type>;
 
 const TypeNameMap& GetTypeNameTable() {
   static auto* table = new auto([]() {
@@ -82,7 +82,7 @@ const TypeNameMap& GetTypeNameTable() {
 
 // Camel-case the field name and append "Entry" for generated map entry name.
 // e.g. map<KeyType, ValueType> foo_map => FooMapEntry
-std::string MapEntryName(absl::string_view field_name) {
+std::string MapEntryName(std::string_view field_name) {
   std::string result;
   static const char kSuffix[] = "Entry";
   result.reserve(field_name.size() + sizeof(kSuffix));
@@ -112,7 +112,7 @@ bool IsLowercase(char c) { return c >= 'a' && c <= 'z'; }
 
 bool IsNumber(char c) { return c >= '0' && c <= '9'; }
 
-bool IsUpperCamelCase(absl::string_view name) {
+bool IsUpperCamelCase(std::string_view name) {
   if (name.empty()) {
     return true;
   }
@@ -129,7 +129,7 @@ bool IsUpperCamelCase(absl::string_view name) {
   return true;
 }
 
-bool IsUpperUnderscore(absl::string_view name) {
+bool IsUpperUnderscore(std::string_view name) {
   for (const char c : name) {
     if (!IsUppercase(c) && c != '_' && !IsNumber(c)) {
       return false;
@@ -138,7 +138,7 @@ bool IsUpperUnderscore(absl::string_view name) {
   return true;
 }
 
-bool IsLowerUnderscore(absl::string_view name) {
+bool IsLowerUnderscore(std::string_view name) {
   for (const char c : name) {
     if (!IsLowercase(c) && c != '_' && !IsNumber(c)) {
       return false;
@@ -147,7 +147,7 @@ bool IsLowerUnderscore(absl::string_view name) {
   return true;
 }
 
-bool IsNumberFollowUnderscore(absl::string_view name) {
+bool IsNumberFollowUnderscore(std::string_view name) {
   for (int i = 1; i < name.length(); i++) {
     const char c = name[i];
     if (IsNumber(c) && name[i - 1] == '_') {
@@ -181,7 +181,7 @@ Parser::Parser()
 Parser::~Parser() = default;
 // ===================================================================
 
-inline bool Parser::LookingAt(absl::string_view text) {
+inline bool Parser::LookingAt(std::string_view text) {
   return input_->current().text == text;
 }
 
@@ -191,7 +191,7 @@ inline bool Parser::LookingAtType(io::Tokenizer::TokenType token_type) {
 
 inline bool Parser::AtEnd() { return LookingAtType(io::Tokenizer::TYPE_END); }
 
-bool Parser::TryConsume(absl::string_view text) {
+bool Parser::TryConsume(std::string_view text) {
   if (LookingAt(text)) {
     input_->Next();
     return true;
@@ -200,7 +200,7 @@ bool Parser::TryConsume(absl::string_view text) {
   }
 }
 
-bool Parser::Consume(absl::string_view text, ErrorMaker error) {
+bool Parser::Consume(std::string_view text, ErrorMaker error) {
   if (TryConsume(text)) {
     return true;
   } else {
@@ -209,7 +209,7 @@ bool Parser::Consume(absl::string_view text, ErrorMaker error) {
   }
 }
 
-bool Parser::Consume(absl::string_view text) {
+bool Parser::Consume(std::string_view text) {
   return Consume(text,
                  [&] { return absl::StrCat("Expected \"", text, "\"."); });
 }
@@ -336,7 +336,7 @@ bool Parser::ConsumeString(std::string* output, ErrorMaker error) {
   }
 }
 
-bool Parser::TryConsumeEndOfDeclaration(absl::string_view text,
+bool Parser::TryConsumeEndOfDeclaration(std::string_view text,
                                         const LocationRecorder* location) {
   if (LookingAt(text)) {
     std::string leading, trailing;
@@ -367,7 +367,7 @@ bool Parser::TryConsumeEndOfDeclaration(absl::string_view text,
   }
 }
 
-bool Parser::ConsumeEndOfDeclaration(absl::string_view text,
+bool Parser::ConsumeEndOfDeclaration(std::string_view text,
                                      const LocationRecorder* location) {
   if (TryConsumeEndOfDeclaration(text, location)) {
     return true;
@@ -2620,7 +2620,7 @@ bool SourceLocationTable::Find(
 }
 
 bool SourceLocationTable::FindImport(const Message* descriptor,
-                                     absl::string_view name, int* line,
+                                     std::string_view name, int* line,
                                      int* column) const {
   auto it = import_location_map_.find({descriptor, std::string(name)});
   if (it == import_location_map_.end()) {

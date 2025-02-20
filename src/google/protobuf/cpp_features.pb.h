@@ -42,7 +42,7 @@ namespace google {
 namespace protobuf {
 namespace internal {
 template <typename T>
-::absl::string_view GetAnyMessageName();
+::std::string_view GetAnyMessageName();
 }  // namespace internal
 }  // namespace protobuf
 }  // namespace google
@@ -91,7 +91,7 @@ inline const std::string& CppFeatures_StringType_Name(CppFeatures_StringType val
                                                  0, 3>(
       static_cast<int>(value));
 }
-inline bool CppFeatures_StringType_Parse(absl::string_view name, CppFeatures_StringType* value) {
+inline bool CppFeatures_StringType_Parse(std::string_view name, CppFeatures_StringType* value) {
   return ::google::protobuf::internal::ParseNamedEnum<CppFeatures_StringType>(
       CppFeatures_StringType_descriptor(), name, value);
 }
@@ -224,9 +224,9 @@ class PROTOBUF_EXPORT CppFeatures final : public ::google::protobuf::Message
   void InternalSwap(CppFeatures* other);
  private:
   template <typename T>
-  friend ::absl::string_view(
+  friend ::std::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "pb.CppFeatures"; }
+  static ::std::string_view FullMessageName() { return "pb.CppFeatures"; }
 
  protected:
   explicit CppFeatures(::google::protobuf::Arena* arena);
@@ -262,7 +262,7 @@ class PROTOBUF_EXPORT CppFeatures final : public ::google::protobuf::Message
   static inline const std::string& StringType_Name(T value) {
     return CppFeatures_StringType_Name(value);
   }
-  static inline bool StringType_Parse(absl::string_view name, StringType* value) {
+  static inline bool StringType_Parse(std::string_view name, StringType* value) {
     return CppFeatures_StringType_Parse(name, value);
   }
 

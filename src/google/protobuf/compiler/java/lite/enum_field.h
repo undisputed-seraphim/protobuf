@@ -61,7 +61,7 @@ class ImmutableEnumFieldLiteGenerator : public ImmutableFieldLiteGenerator {
 
  protected:
   const FieldDescriptor* descriptor_;
-  absl::flat_hash_map<absl::string_view, std::string> variables_;
+  absl::flat_hash_map<std::string_view, std::string> variables_;
   const int messageBitIndex_;
   Context* context_;
   ClassNameResolver* name_resolver_;
@@ -109,7 +109,7 @@ class RepeatedImmutableEnumFieldLiteGenerator
 
  private:
   const FieldDescriptor* descriptor_;
-  absl::flat_hash_map<absl::string_view, std::string> variables_;
+  absl::flat_hash_map<std::string_view, std::string> variables_;
   Context* context_;
   ClassNameResolver* name_resolver_;
 };

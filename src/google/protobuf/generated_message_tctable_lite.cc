@@ -20,7 +20,7 @@
 #include "absl/log/absl_log.h"
 #include "absl/numeric/bits.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/arenastring.h"
 #include "google/protobuf/generated_enum_util.h"
 #include "google/protobuf/generated_message_tctable_decl.h"
@@ -198,7 +198,7 @@ const TcParseTableBase::FieldEntry* TcParser::FindFieldEntry(
 // This is designed to be compact but not particularly fast to retrieve.
 // In particular, it takes O(n) to retrieve the name of the n'th field,
 // which is usually fine because most protos have fewer than 10 fields.
-static absl::string_view FindName(const char* name_data, size_t entries,
+static std::string_view FindName(const char* name_data, size_t entries,
                                   size_t index) {
   // The compiler unrolls these... if this isn't fast enough,
   // there's an AVX version at https://godbolt.org/z/eojrjqzfr
@@ -214,11 +214,11 @@ static absl::string_view FindName(const char* name_data, size_t entries,
   return {start, size};
 }
 
-absl::string_view TcParser::MessageName(const TcParseTableBase* table) {
+std::string_view TcParser::MessageName(const TcParseTableBase* table) {
   return FindName(table->name_data(), table->num_field_entries + 1, 0);
 }
 
-absl::string_view TcParser::FieldName(const TcParseTableBase* table,
+std::string_view TcParser::FieldName(const TcParseTableBase* table,
                                       const FieldEntry* field_entry) {
   const FieldEntry* const field_entries = table->field_entries_begin();
   auto field_index = static_cast<size_t>(field_entry - field_entries);
@@ -1364,8 +1364,8 @@ PROTOBUF_NOINLINE const char* TcParser::FastEr1P2(PROTOBUF_TC_PARAM_DECL) {
 //////////////////////////////////////////////////////////////////////////////
 
 // Defined in wire_format_lite.cc
-void PrintUTF8ErrorLog(absl::string_view message_name,
-                       absl::string_view field_name, const char* operation_str,
+void PrintUTF8ErrorLog(std::string_view message_name,
+                       std::string_view field_name, const char* operation_str,
                        bool emit_stacktrace);
 
 void TcParser::ReportFastUtf8Error(uint32_t decoded_tag,
@@ -2111,7 +2111,7 @@ PROTOBUF_NOINLINE const char* TcParser::MpPackedVarint(PROTOBUF_TC_PARAM_DECL) {
   }
 }
 
-bool TcParser::MpVerifyUtf8(absl::string_view wire_bytes,
+bool TcParser::MpVerifyUtf8(std::string_view wire_bytes,
                             const TcParseTableBase* table,
                             const FieldEntry& entry, uint16_t xform_val) {
   if (xform_val == field_layout::kTvUtf8) {

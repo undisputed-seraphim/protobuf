@@ -179,7 +179,7 @@ class PROTOBUF_EXPORT SimpleDescriptorDatabase : public DescriptorDatabase {
     // Helpers to recursively add particular descriptors and all their contents
     // to the index.
     bool AddFile(const FileDescriptorProto& file, Value value);
-    bool AddSymbol(absl::string_view name, Value value);
+    bool AddSymbol(std::string_view name, Value value);
     bool AddNestedExtensions(const std::string& filename,
                              const DescriptorProto& message_type, Value value);
     bool AddExtension(const std::string& filename,

@@ -19,7 +19,7 @@
 #include "absl/status/status.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/strings/strip.h"
 #include "google/protobuf/descriptor_legacy.h"
 #include "google/protobuf/io/strtod.h"
@@ -212,11 +212,11 @@ std::string DefaultValueAsString(const FieldDescriptor& descriptor) {
 }
 
 template <typename T>
-std::string GetTypeUrl(absl::string_view url_prefix, const T& descriptor) {
+std::string GetTypeUrl(std::string_view url_prefix, const T& descriptor) {
   return absl::StrCat(url_prefix, "/", descriptor.full_name());
 }
 
-void ConvertFieldDescriptor(absl::string_view url_prefix,
+void ConvertFieldDescriptor(std::string_view url_prefix,
                             const FieldDescriptor& descriptor, Field* field) {
   field->set_kind(static_cast<Field::Kind>(descriptor.type()));
   switch (descriptor.label()) {
@@ -283,7 +283,7 @@ void ConvertEnumDescriptor(const EnumDescriptor& descriptor, Enum* enum_type) {
   ConvertEnumOptions(descriptor.options(), *enum_type->mutable_options());
 }
 
-void ConvertDescriptor(absl::string_view url_prefix,
+void ConvertDescriptor(std::string_view url_prefix,
                        const Descriptor& descriptor, Type* type) {
   type->Clear();
   type->set_name(descriptor.full_name());
@@ -302,7 +302,7 @@ void ConvertDescriptor(absl::string_view url_prefix,
 
 class DescriptorPoolTypeResolver : public TypeResolver {
  public:
-  DescriptorPoolTypeResolver(absl::string_view url_prefix,
+  DescriptorPoolTypeResolver(std::string_view url_prefix,
                              const DescriptorPool* pool)
       : url_prefix_(url_prefix), pool_(pool) {}
 
@@ -341,9 +341,9 @@ class DescriptorPoolTypeResolver : public TypeResolver {
   }
 
  private:
-  absl::Status ParseTypeUrl(absl::string_view type_url,
+  absl::Status ParseTypeUrl(std::string_view type_url,
                             std::string* type_name) {
-    absl::string_view stripped = type_url;
+    std::string_view stripped = type_url;
     if (!absl::ConsumePrefix(&stripped, url_prefix_) ||
         !absl::ConsumePrefix(&stripped, "/")) {
       return absl::InvalidArgumentError(
@@ -360,13 +360,13 @@ class DescriptorPoolTypeResolver : public TypeResolver {
 
 }  // namespace
 
-TypeResolver* NewTypeResolverForDescriptorPool(absl::string_view url_prefix,
+TypeResolver* NewTypeResolverForDescriptorPool(std::string_view url_prefix,
                                                const DescriptorPool* pool) {
   return new DescriptorPoolTypeResolver(url_prefix, pool);
 }
 
 // Performs a direct conversion from a descriptor to a type proto.
-Type ConvertDescriptorToType(absl::string_view url_prefix,
+Type ConvertDescriptorToType(std::string_view url_prefix,
                              const Descriptor& descriptor) {
   Type type;
   ConvertDescriptor(url_prefix, descriptor, &type);

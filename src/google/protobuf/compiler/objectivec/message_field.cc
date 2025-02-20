@@ -13,7 +13,7 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/objectivec/field.h"
 #include "google/protobuf/compiler/objectivec/helpers.h"
 #include "google/protobuf/compiler/objectivec/names.h"
@@ -29,7 +29,7 @@ namespace {
 
 void SetMessageVariables(
     const FieldDescriptor* descriptor,
-    absl::flat_hash_map<absl::string_view, std::string>* variables) {
+    absl::flat_hash_map<std::string_view, std::string>* variables) {
   const std::string& message_type = ClassName(descriptor->message_type());
   const std::string& containing_class =
       ClassName(descriptor->containing_type());

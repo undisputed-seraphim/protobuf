@@ -14,8 +14,8 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "google/protobuf/generated_message_tctable_decl.h"
 #include "google/protobuf/generated_message_tctable_impl.h"
 #include "google/protobuf/io/coded_stream.h"
@@ -48,9 +48,9 @@ TcFieldData Xor2SerializedBytes(TcFieldData tfd, const char* ptr) {
   return tfd;
 }
 
-absl::optional<const char*> fallback_ptr_received;
-absl::optional<uint64_t> fallback_hasbits_received;
-absl::optional<uint64_t> fallback_tag_received;
+std::optional<const char*> fallback_ptr_received;
+std::optional<uint64_t> fallback_hasbits_received;
+std::optional<uint64_t> fallback_tag_received;
 PROTOBUF_CC const char* FastParserGaveUp(
     ::google::protobuf::MessageLite*, const char* ptr, ::google::protobuf::internal::ParseContext*,
     ::google::protobuf::internal::TcFieldData data,
@@ -167,7 +167,7 @@ TEST(FastVarints, NameHere) {
           }
         }
 
-        absl::string_view serialized{
+        std::string_view serialized{
             reinterpret_cast<char*>(&serialize_buffer[0]),
             static_cast<size_t>(serialize_ptr - serialize_buffer)};
 
@@ -326,7 +326,7 @@ class FindFieldEntryTest : public ::testing::Test {
   // Calls the private `FieldName` function.
   template <size_t kFastTableSizeLog2, size_t kNumEntries, size_t kNumFieldAux,
             size_t kNameTableSize, size_t kFieldLookupTableSize>
-  static absl::string_view FieldName(
+  static std::string_view FieldName(
       const TcParseTable<kFastTableSizeLog2, kNumEntries, kNumFieldAux,
                          kNameTableSize, kFieldLookupTableSize>& table,
       const TcParseTableBase::FieldEntry* entry) {
@@ -336,7 +336,7 @@ class FindFieldEntryTest : public ::testing::Test {
   // Calls the private `MessageName` function.
   template <size_t kFastTableSizeLog2, size_t kNumEntries, size_t kNumFieldAux,
             size_t kNameTableSize, size_t kFieldLookupTableSize>
-  static absl::string_view MessageName(
+  static std::string_view MessageName(
       const TcParseTable<kFastTableSizeLog2, kNumEntries, kNumFieldAux,
                          kNameTableSize, kFieldLookupTableSize>& table) {
     return TcParser::MessageName(&table.header);
@@ -534,7 +534,7 @@ TEST_F(FindFieldEntryTest, OutOfRange) {
     EXPECT_THAT(entry,
                 IsEntryForFieldNum(&table, field_num, table_field_numbers));
 
-    absl::string_view name = FieldName(table, entry);
+    std::string_view name = FieldName(table, entry);
     EXPECT_EQ(name.length(), field_num);
     while (name[0] == '0') name.remove_prefix(1);  // strip leading zeores
     EXPECT_EQ(name, absl::StrCat(field_num));
@@ -799,7 +799,7 @@ TEST_F(FindFieldEntryTest, BigMessage) {
   for (int field_num :
        {1, 12, 31, 42, 57, 68, 79, 90, 101, 119, 249, 402, 412}) {
     auto* entry = FindFieldEntry(test_all_types_table, field_num);
-    absl::string_view name = FieldName(test_all_types_table, entry);
+    std::string_view name = FieldName(test_all_types_table, entry);
     switch (field_num) {
       case 1:
         EXPECT_THAT(name, Eq("optional_int32"));
@@ -906,7 +906,7 @@ TEST(GeneratedMessageTctableLiteTest, PackedEnumSmallRangeLargeSize) {
   serialize_ptr = WireFormatLite::WriteUInt32NoTagToArray(
       std::numeric_limits<int32_t>::max() - 64, serialize_ptr);
 
-  absl::string_view serialized{
+  std::string_view serialized{
       reinterpret_cast<char*>(&serialize_buffer[0]),
       static_cast<size_t>(serialize_ptr - serialize_buffer)};
 
@@ -933,7 +933,7 @@ TEST(GeneratedMessageTctableLiteTest,
   serialize_ptr =
       WireFormatLite::WriteUInt32NoTagToArray(uint32_t{1} << 20, serialize_ptr);
 
-  absl::string_view serialized{
+  std::string_view serialized{
       reinterpret_cast<char*>(&serialize_buffer[0]),
       static_cast<size_t>(serialize_ptr - serialize_buffer)};
 

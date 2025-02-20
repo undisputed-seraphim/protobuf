@@ -20,10 +20,10 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "absl/types/span.h"
-#include "absl/types/variant.h"
+#include <variant>
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/dynamic_message.h"
 #include "google/protobuf/io/coded_stream.h"
@@ -86,7 +86,7 @@ class ResolverPool {
     Message& operator=(const Message&) = delete;
 
     absl::Span<const Field> FieldsByIndex() const;
-    const Field* FindField(absl::string_view name) const;
+    const Field* FindField(std::string_view name) const;
     const Field* FindField(int32_t number) const;
 
     const google::protobuf::Type& proto() const { return raw_; }
@@ -100,7 +100,7 @@ class ResolverPool {
     ResolverPool* pool_;
     google::protobuf::Type raw_;
     mutable std::unique_ptr<Field[]> fields_;
-    mutable absl::flat_hash_map<absl::string_view, const Field*>
+    mutable absl::flat_hash_map<std::string_view, const Field*>
         fields_by_name_;
     mutable absl::flat_hash_map<int32_t, const Field*> fields_by_number_;
   };
@@ -120,7 +120,7 @@ class ResolverPool {
 
     ResolverPool* pool_;
     google::protobuf::Enum raw_;
-    mutable absl::flat_hash_map<absl::string_view, google::protobuf::EnumValue*>
+    mutable absl::flat_hash_map<std::string_view, google::protobuf::EnumValue*>
         values_;
   };
 
@@ -130,8 +130,8 @@ class ResolverPool {
   ResolverPool(const ResolverPool&) = delete;
   ResolverPool& operator=(const ResolverPool&) = delete;
 
-  absl::StatusOr<const Message*> FindMessage(absl::string_view url);
-  absl::StatusOr<const Enum*> FindEnum(absl::string_view url);
+  absl::StatusOr<const Message*> FindMessage(std::string_view url);
+  absl::StatusOr<const Enum*> FindEnum(std::string_view url);
 
  private:
   absl::flat_hash_map<std::string, std::unique_ptr<Message>> messages_;
@@ -146,7 +146,7 @@ class UntypedMessage final {
  public:
   // New nominal type instead of `bool` to avoid vector<bool> shenanigans.
   enum Bool : unsigned char { kTrue, kFalse };
-  using Value = absl::variant<Bool, int32_t, uint32_t, int64_t, uint64_t, float,
+  using Value = std::variant<Bool, int32_t, uint32_t, int64_t, uint64_t, float,
                               double, std::string, UntypedMessage,
                               //
                               std::vector<Bool>, std::vector<int32_t>,
@@ -212,7 +212,7 @@ class UntypedMessage final {
   explicit UntypedMessage(const ResolverPool::Message* desc) : desc_(desc) {}
 
   absl::Status Decode(io::CodedInputStream& stream,
-                      absl::optional<int32_t> current_group = absl::nullopt);
+                      std::optional<int32_t> current_group = absl::nullopt);
 
   absl::Status DecodeVarint(io::CodedInputStream& stream,
                             const ResolverPool::Field& field);

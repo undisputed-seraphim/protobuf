@@ -100,8 +100,8 @@
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/cord.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "google/protobuf/arena.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/generated_message_reflection.h"
@@ -388,7 +388,7 @@ class PROTOBUF_EXPORT Message : public MessageLite {
       size_t total_size, const internal::CachedSize* cached_size) const;
 
   // Reflection based version for reflection based types.
-  static absl::string_view GetTypeNameImpl(const internal::ClassData* data);
+  static std::string_view GetTypeNameImpl(const internal::ClassData* data);
   static void MergeImpl(MessageLite& to, const MessageLite& from);
   void ClearImpl();
   static size_t ByteSizeLongImpl(const MessageLite& msg);
@@ -613,7 +613,7 @@ class PROTOBUF_EXPORT Reflection final {
                      const FieldDescriptor* field) const;
 
   // Enables GetStringView() and GetRepeatedStringView() APIs to return
-  // absl::string_view even though the underlying implementation doesn't have
+  // std::string_view even though the underlying implementation doesn't have
   // contiguous bytes; e.g. absl::Cord.
   class ScratchSpace {
    public:
@@ -625,8 +625,8 @@ class PROTOBUF_EXPORT Reflection final {
    private:
     friend class Reflection;
 
-    absl::string_view CopyFromCord(const absl::Cord& cord) {
-      if (absl::optional<absl::string_view> flat = cord.TryFlat()) {
+    std::string_view CopyFromCord(const absl::Cord& cord) {
+      if (std::optional<std::string_view> flat = cord.TryFlat()) {
         return *flat;
       }
       if (!buffer_) {
@@ -640,9 +640,9 @@ class PROTOBUF_EXPORT Reflection final {
   };
 
   // Returns a view into the contents of a string field. "scratch" is used to
-  // flatten bytes if it is non-contiguous. The lifetime of absl::string_view is
+  // flatten bytes if it is non-contiguous. The lifetime of std::string_view is
   // either tied to "message" (contiguous) or "scratch" (otherwise).
-  absl::string_view GetStringView(
+  std::string_view GetStringView(
       const Message& message, const FieldDescriptor* field,
       ScratchSpace& scratch ABSL_ATTRIBUTE_LIFETIME_BOUND) const;
 
@@ -768,7 +768,7 @@ class PROTOBUF_EXPORT Reflection final {
                                                 std::string* scratch) const;
 
   // See GetStringView(), above.
-  absl::string_view GetRepeatedStringView(
+  std::string_view GetRepeatedStringView(
       const Message& message, const FieldDescriptor* field, int index,
       ScratchSpace& scratch ABSL_ATTRIBUTE_LIFETIME_BOUND) const;
 
@@ -951,7 +951,7 @@ class PROTOBUF_EXPORT Reflection final {
 
   // Try to find an extension of this message type by fully-qualified field
   // name.  Returns nullptr if no extension is known for this name or number.
-  const FieldDescriptor* FindKnownExtensionByName(absl::string_view name) const;
+  const FieldDescriptor* FindKnownExtensionByName(std::string_view name) const;
 
   // Try to find an extension of this message type by field number.
   // Returns nullptr if no extension is known for this name or number.

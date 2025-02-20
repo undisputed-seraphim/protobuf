@@ -44,7 +44,7 @@ using google::protobuf::UInt64Value;
 
 static const char kUrlPrefix[] = "type.googleapis.com";
 
-const Field* FindField(const Type& type, absl::string_view name) {
+const Field* FindField(const Type& type, std::string_view name) {
   for (const Field& field : type.fields()) {
     if (field.name() == name) {
       return &field;
@@ -54,7 +54,7 @@ const Field* FindField(const Type& type, absl::string_view name) {
 }
 
 bool HasField(const Type& type, Field::Cardinality cardinality,
-              Field::Kind kind, absl::string_view name, int number) {
+              Field::Kind kind, std::string_view name, int number) {
   const Field* field = FindField(type, name);
   if (field == nullptr) {
     return false;
@@ -63,8 +63,8 @@ bool HasField(const Type& type, Field::Cardinality cardinality,
          field->number() == number;
 }
 
-bool CheckFieldTypeUrl(const Type& type, absl::string_view name,
-                       absl::string_view type_url) {
+bool CheckFieldTypeUrl(const Type& type, std::string_view name,
+                       std::string_view type_url) {
   const Field* field = FindField(type, name);
   if (field == nullptr) {
     return false;
@@ -72,8 +72,8 @@ bool CheckFieldTypeUrl(const Type& type, absl::string_view name,
   return field->type_url() == type_url;
 }
 
-bool FieldInOneof(const Type& type, absl::string_view name,
-                  absl::string_view oneof_name) {
+bool FieldInOneof(const Type& type, std::string_view name,
+                  std::string_view oneof_name) {
   const Field* field = FindField(type, name);
   if (field == nullptr || field->oneof_index() <= 0 ||
       field->oneof_index() > type.oneofs_size()) {
@@ -82,7 +82,7 @@ bool FieldInOneof(const Type& type, absl::string_view name,
   return type.oneofs(field->oneof_index() - 1) == oneof_name;
 }
 
-bool IsPacked(const Type& type, absl::string_view name) {
+bool IsPacked(const Type& type, std::string_view name) {
   const Field* field = FindField(type, name);
   if (field == nullptr) {
     return false;
@@ -90,7 +90,7 @@ bool IsPacked(const Type& type, absl::string_view name) {
   return field->packed();
 }
 
-const EnumValue* FindEnumValue(const Enum& type, absl::string_view name) {
+const EnumValue* FindEnumValue(const Enum& type, std::string_view name) {
   for (const EnumValue& value : type.enumvalue()) {
     if (value.name() == name) {
       return &value;
@@ -99,7 +99,7 @@ const EnumValue* FindEnumValue(const Enum& type, absl::string_view name) {
   return nullptr;
 }
 
-bool EnumHasValue(const Enum& type, absl::string_view name, int number) {
+bool EnumHasValue(const Enum& type, std::string_view name, int number) {
   const EnumValue* value = FindEnumValue(type, name);
   if (value == nullptr) {
     return false;
@@ -108,7 +108,7 @@ bool EnumHasValue(const Enum& type, absl::string_view name, int number) {
 }
 
 template <typename WrapperT, typename T>
-bool HasOption(const RepeatedPtrField<Option>& options, absl::string_view name,
+bool HasOption(const RepeatedPtrField<Option>& options, std::string_view name,
                T value) {
   for (const Option& option : options) {
     if (option.name() == name) {
@@ -122,17 +122,17 @@ bool HasOption(const RepeatedPtrField<Option>& options, absl::string_view name,
 }
 
 bool HasBoolOption(const RepeatedPtrField<Option>& options,
-                   absl::string_view name, bool value) {
+                   std::string_view name, bool value) {
   return HasOption<BoolValue>(options, name, value);
 }
 
 bool HasInt32Option(const RepeatedPtrField<Option>& options,
-                    absl::string_view name, int32_t value) {
+                    std::string_view name, int32_t value) {
   return HasOption<Int32Value>(options, name, value);
 }
 
 bool HasUInt64Option(const RepeatedPtrField<Option>& options,
-                     absl::string_view name, uint64_t value) {
+                     std::string_view name, uint64_t value) {
   return HasOption<UInt64Value>(options, name, value);
 }
 
@@ -422,7 +422,7 @@ class DescriptorPoolTypeResolverSyntaxTest : public testing::Test {
       : resolver_(NewTypeResolverForDescriptorPool(kUrlPrefix, &pool_)) {}
 
   const FileDescriptor* BuildFile(
-      absl::string_view syntax,
+      std::string_view syntax,
       absl::optional<Edition> edition = absl::nullopt) {
     FileDescriptorProto proto;
     proto.set_package("test");

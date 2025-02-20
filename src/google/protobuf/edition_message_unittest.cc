@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 #include "absl/log/absl_check.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/arena.h"
 #include "google/protobuf/edition_unittest.pb.h"
 #include "google/protobuf/explicitly_constructed.h"
@@ -54,7 +54,7 @@ namespace {
 TEST(EditionMessageTest, AllSetMethodsOnStringField) {
   UNITTEST::TestAllTypes msg;
 
-  msg.set_optional_string(absl::string_view("Abcdef"));
+  msg.set_optional_string(std::string_view("Abcdef"));
   EXPECT_EQ(msg.optional_string(), "Abcdef");
 
   msg.set_optional_string("Asciiz");
@@ -76,7 +76,7 @@ TEST(EditionMessageTest, AllSetMethodsOnStringField) {
 TEST(EditionMessageTest, AllAddMethodsOnRepeatedStringField) {
   UNITTEST::TestAllTypes msg;
 
-  msg.add_repeated_string(absl::string_view("Abcdef"));
+  msg.add_repeated_string(std::string_view("Abcdef"));
   EXPECT_EQ(msg.repeated_string(0), "Abcdef");
   msg.clear_repeated_string();
 

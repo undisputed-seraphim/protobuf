@@ -21,8 +21,8 @@
 #include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "absl/types/span.h"
 #include "google/protobuf/compiler/cpp/field_generators/generators.h"
 #include "google/protobuf/compiler/cpp/generator.h"
@@ -290,7 +290,7 @@ std::unique_ptr<FieldGeneratorBase> MakeGenerator(const FieldDescriptor* field,
 }
 
 void HasBitVars(const FieldDescriptor* field, const Options& opts,
-                absl::optional<uint32_t> idx, std::vector<Sub>& vars) {
+                std::optional<uint32_t> idx, std::vector<Sub>& vars) {
   if (!idx.has_value()) {
     vars.emplace_back(Sub("set_hasbit", "").WithSuffix(";"));
     vars.emplace_back(Sub("clear_hasbit", "").WithSuffix(";"));
@@ -302,7 +302,7 @@ void HasBitVars(const FieldDescriptor* field, const Options& opts,
   int32_t index = *idx / 32;
   std::string mask = absl::StrFormat("0x%08xu", 1u << (*idx % 32));
 
-  absl::string_view has_bits = IsMapEntryMessage(field->containing_type())
+  std::string_view has_bits = IsMapEntryMessage(field->containing_type())
                                    ? "_has_bits_"
                                    : "_impl_._has_bits_";
 
@@ -316,7 +316,7 @@ void HasBitVars(const FieldDescriptor* field, const Options& opts,
 }
 
 void InlinedStringVars(const FieldDescriptor* field, const Options& opts,
-                       absl::optional<uint32_t> idx, std::vector<Sub>& vars) {
+                       std::optional<uint32_t> idx, std::vector<Sub>& vars) {
   if (!IsStringInlined(field, opts)) {
     ABSL_CHECK(!idx.has_value());
     return;
@@ -331,7 +331,7 @@ void InlinedStringVars(const FieldDescriptor* field, const Options& opts,
   vars.emplace_back("inlined_string_index", index);
   vars.emplace_back("inlined_string_mask", mask);
 
-  absl::string_view array = IsMapEntryMessage(field->containing_type())
+  std::string_view array = IsMapEntryMessage(field->containing_type())
                                 ? "_inlined_string_donated_"
                                 : "_impl_._inlined_string_donated_";
 
@@ -346,8 +346,8 @@ void InlinedStringVars(const FieldDescriptor* field, const Options& opts,
 FieldGenerator::FieldGenerator(const FieldDescriptor* field,
                                const Options& options,
                                MessageSCCAnalyzer* scc_analyzer,
-                               absl::optional<uint32_t> hasbit_index,
-                               absl::optional<uint32_t> inlined_string_index)
+                               std::optional<uint32_t> hasbit_index,
+                               std::optional<uint32_t> inlined_string_index)
     : impl_(MakeGenerator(field, options, scc_analyzer)),
       field_vars_(FieldVars(field, options)),
       tracker_vars_(MakeTrackerCalls(field, options)),
@@ -364,12 +364,12 @@ void FieldGeneratorTable::Build(
   fields_.reserve(static_cast<size_t>(descriptor_->field_count()));
   for (const auto* field : internal::FieldRange(descriptor_)) {
     size_t index = static_cast<size_t>(field->index());
-    absl::optional<uint32_t> has_bit_index;
+    std::optional<uint32_t> has_bit_index;
     if (!has_bit_indices.empty() && has_bit_indices[index] >= 0) {
       has_bit_index = static_cast<uint32_t>(has_bit_indices[index]);
     }
 
-    absl::optional<uint32_t> inlined_string_index;
+    std::optional<uint32_t> inlined_string_index;
     if (!inlined_string_indices.empty() && inlined_string_indices[index] >= 0) {
       inlined_string_index =
           static_cast<uint32_t>(inlined_string_indices[index]);

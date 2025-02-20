@@ -40,7 +40,7 @@
 #include "google/protobuf/testing/googletest.h"
 #include <gtest/gtest.h>
 #include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/strings/substitute.h"
 #include "google/protobuf/compiler/code_generator.h"
 #include "google/protobuf/compiler/command_line_interface.h"
@@ -186,14 +186,14 @@ class CommandLineInterfaceTest : public CommandLineInterfaceTester {
 #endif  // _WIN32
 
 
-  std::string ReadFile(absl::string_view filename);
-  void ReadDescriptorSet(absl::string_view filename,
+  std::string ReadFile(std::string_view filename);
+  void ReadDescriptorSet(std::string_view filename,
                          FileDescriptorSet* descriptor_set);
 
-  void WriteDescriptorSet(absl::string_view filename,
+  void WriteDescriptorSet(std::string_view filename,
                           const FileDescriptorSet* descriptor_set);
 
-  FeatureSetDefaults ReadEditionDefaults(absl::string_view filename);
+  FeatureSetDefaults ReadEditionDefaults(std::string_view filename);
 
   // The default code generators support all features. Use this to create a
   // code generator that omits the given feature(s).
@@ -205,7 +205,7 @@ class CommandLineInterfaceTest : public CommandLineInterfaceTester {
     RegisterGenerator(name, std::move(generator), description);
   }
 
-  void SetMockGeneratorTestCase(absl::string_view name) {
+  void SetMockGeneratorTestCase(std::string_view name) {
 #ifdef _WIN32
     ::_putenv(absl::StrCat("TEST_CASE", "=", name).c_str());
 #else
@@ -336,7 +336,7 @@ void CommandLineInterfaceTest::ExpectNullCodeGeneratorCalled(
 #endif  // _WIN32
 
 
-std::string CommandLineInterfaceTest::ReadFile(absl::string_view filename) {
+std::string CommandLineInterfaceTest::ReadFile(std::string_view filename) {
   std::string path = absl::StrCat(temp_directory(), "/", filename);
   std::string file_contents;
   ABSL_CHECK_OK(File::GetContents(path, &file_contents, true));
@@ -344,7 +344,7 @@ std::string CommandLineInterfaceTest::ReadFile(absl::string_view filename) {
 }
 
 void CommandLineInterfaceTest::ReadDescriptorSet(
-    absl::string_view filename, FileDescriptorSet* descriptor_set) {
+    std::string_view filename, FileDescriptorSet* descriptor_set) {
   std::string file_contents = ReadFile(filename);
   if (!descriptor_set->ParseFromString(file_contents)) {
     FAIL() << "Could not parse file contents: " << filename;
@@ -352,7 +352,7 @@ void CommandLineInterfaceTest::ReadDescriptorSet(
 }
 
 FeatureSetDefaults CommandLineInterfaceTest::ReadEditionDefaults(
-    absl::string_view filename) {
+    std::string_view filename) {
   FeatureSetDefaults defaults;
   std::string file_contents = ReadFile(filename);
   ABSL_CHECK(defaults.ParseFromString(file_contents))
@@ -361,7 +361,7 @@ FeatureSetDefaults CommandLineInterfaceTest::ReadEditionDefaults(
 }
 
 void CommandLineInterfaceTest::WriteDescriptorSet(
-    absl::string_view filename, const FileDescriptorSet* descriptor_set) {
+    std::string_view filename, const FileDescriptorSet* descriptor_set) {
   std::string binary_proto;
   ABSL_CHECK(descriptor_set->SerializeToString(&binary_proto));
   CreateTempFile(filename, binary_proto);
@@ -4107,7 +4107,7 @@ class EncodeDecodeTest : public testing::TestWithParam<EncodeDecodeTestMode> {
   bool Run(const std::string& command, bool specify_proto_files = true) {
     std::vector<std::string> args;
     args.push_back("protoc");
-    for (absl::string_view split_piece :
+    for (std::string_view split_piece :
          absl::StrSplit(command, ' ', absl::SkipEmpty())) {
       args.push_back(std::string(split_piece));
     }

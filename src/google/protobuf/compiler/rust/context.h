@@ -15,7 +15,7 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/absl_log.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/types/span.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
@@ -30,7 +30,7 @@ enum class Kernel {
   kCpp,
 };
 
-inline absl::string_view KernelRsName(Kernel kernel) {
+inline std::string_view KernelRsName(Kernel kernel) {
   switch (kernel) {
     case Kernel::kUpb:
       return "upb";
@@ -48,7 +48,7 @@ struct Options {
   std::string mapping_file_path;
   bool strip_nonfunctional_codegen = false;
 
-  static absl::StatusOr<Options> Parse(absl::string_view param);
+  static absl::StatusOr<Options> Parse(std::string_view param);
 };
 
 class RustGeneratorContext {
@@ -109,18 +109,18 @@ class Context {
   }
 
   // Forwards to Emit(), which will likely be called all the time.
-  void Emit(absl::string_view format,
+  void Emit(std::string_view format,
             io::Printer::SourceLocation loc =
                 io::Printer::SourceLocation::current()) const {
     printer_->Emit(format, loc);
   }
-  void Emit(absl::Span<const io::Printer::Sub> vars, absl::string_view format,
+  void Emit(absl::Span<const io::Printer::Sub> vars, std::string_view format,
             io::Printer::SourceLocation loc =
                 io::Printer::SourceLocation::current()) const {
     printer_->Emit(vars, format, loc);
   }
 
-  absl::string_view ImportPathToCrateName(absl::string_view import_path) const {
+  std::string_view ImportPathToCrateName(std::string_view import_path) const {
     if (opts_->strip_nonfunctional_codegen) {
       return "test";
     }

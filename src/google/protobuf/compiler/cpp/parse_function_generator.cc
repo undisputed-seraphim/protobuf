@@ -19,7 +19,7 @@
 #include "absl/log/absl_log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
@@ -55,7 +55,7 @@ ParseFunctionGenerator::ParseFunctionGenerator(
     const std::vector<int>& has_bit_indices,
     const std::vector<int>& inlined_string_indices, const Options& options,
     MessageSCCAnalyzer* scc_analyzer,
-    const absl::flat_hash_map<absl::string_view, std::string>& vars,
+    const absl::flat_hash_map<std::string_view, std::string>& vars,
     int index_in_file_messages)
     : descriptor_(descriptor),
       scc_analyzer_(scc_analyzer),
@@ -239,13 +239,13 @@ static NumToEntryTable MakeNumToEntryTable(
 
 static std::string TcParseFunctionName(internal::TcParseFunction func) {
 #define PROTOBUF_TC_PARSE_FUNCTION_X(value) #value,
-  static constexpr absl::string_view kNames[] = {
+  static constexpr std::string_view kNames[] = {
       {}, PROTOBUF_TC_PARSE_FUNCTION_LIST};
 #undef PROTOBUF_TC_PARSE_FUNCTION_X
   const int func_index = static_cast<int>(func);
   ABSL_CHECK_GE(func_index, 0);
   ABSL_CHECK_LT(func_index, std::end(kNames) - std::begin(kNames));
-  static constexpr absl::string_view ns = "::_pbi::TcParser::";
+  static constexpr std::string_view ns = "::_pbi::TcParser::";
   return absl::StrCat(ns, kNames[func_index]);
 }
 

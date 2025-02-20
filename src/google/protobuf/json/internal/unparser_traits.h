@@ -24,9 +24,9 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
-#include "absl/types/variant.h"
+#include <string_view>
+#include <optional>
+#include <variant>
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/json/internal/descriptor_traits.h"
 #include "google/protobuf/stubs/status_macros.h"
@@ -110,7 +110,7 @@ struct UnparseProto2Descriptor : Proto2Descriptor {
     return f->default_value_enum()->number();
   }
 
-  static absl::StatusOr<absl::string_view> GetString(Field f,
+  static absl::StatusOr<std::string_view> GetString(Field f,
                                                      std::string& scratch) {
     return f->default_value_string();
   }
@@ -151,7 +151,7 @@ struct UnparseProto2Descriptor : Proto2Descriptor {
     return msg.GetReflection()->GetEnumValue(msg, f);
   }
 
-  static absl::StatusOr<absl::string_view> GetString(Field f,
+  static absl::StatusOr<std::string_view> GetString(Field f,
                                                      std::string& scratch,
                                                      const Msg& msg) {
     return msg.GetReflection()->GetStringReference(msg, f, &scratch);
@@ -196,7 +196,7 @@ struct UnparseProto2Descriptor : Proto2Descriptor {
     return msg.GetReflection()->GetRepeatedEnumValue(msg, f, idx);
   }
 
-  static absl::StatusOr<absl::string_view> GetString(Field f,
+  static absl::StatusOr<std::string_view> GetString(Field f,
                                                      std::string& scratch,
                                                      const Msg& msg,
                                                      size_t idx) {
@@ -211,7 +211,7 @@ struct UnparseProto2Descriptor : Proto2Descriptor {
 
   template <typename F>
   static absl::Status WithDecodedMessage(const Desc& desc,
-                                         absl::string_view data, F body) {
+                                         std::string_view data, F body) {
     DynamicMessageFactory factory;
     std::unique_ptr<Message> unerased(factory.GetPrototype(&desc)->New());
     unerased->ParsePartialFromString(data);
@@ -332,7 +332,7 @@ struct UnparseProto3Type : Proto3Type {
                             /*case_insensitive=*/false);
   }
 
-  static absl::StatusOr<absl::string_view> GetString(Field f,
+  static absl::StatusOr<std::string_view> GetString(Field f,
                                                      std::string& scratch) {
     absl::CUnescape(f->proto().default_value(), &scratch);
     return scratch;
@@ -381,7 +381,7 @@ struct UnparseProto3Type : Proto3Type {
     return msg.Get<int32_t>(f->proto().number())[idx];
   }
 
-  static absl::StatusOr<absl::string_view> GetString(Field f,
+  static absl::StatusOr<std::string_view> GetString(Field f,
                                                      std::string& scratch,
                                                      const Msg& msg,
                                                      size_t idx = 0) {
@@ -395,7 +395,7 @@ struct UnparseProto3Type : Proto3Type {
 
   template <typename F>
   static absl::Status WithDecodedMessage(const Desc& desc,
-                                         absl::string_view data, F body) {
+                                         std::string_view data, F body) {
     io::CodedInputStream stream(reinterpret_cast<const uint8_t*>(data.data()),
                                 data.size());
     auto unerased = Msg::ParseFromStream(&desc, stream);

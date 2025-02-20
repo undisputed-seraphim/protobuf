@@ -24,7 +24,7 @@
 #include "absl/container/btree_set.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/cpp/generator.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/names.h"
@@ -39,7 +39,7 @@ namespace cpp {
 namespace {
 using Sub = ::google::protobuf::io::Printer::Sub;
 
-absl::flat_hash_map<absl::string_view, std::string> EnumVars(
+absl::flat_hash_map<std::string_view, std::string> EnumVars(
     const EnumDescriptor* enum_, const Options& options,
     const EnumValueDescriptor* min, const EnumValueDescriptor* max) {
   auto classname = ClassName(enum_, false);
@@ -55,7 +55,7 @@ absl::flat_hash_map<absl::string_view, std::string> EnumVars(
       {"return_type", CppGenerator::GetResolvedSourceFeatures(*enum_)
                               .GetExtension(::pb::cpp)
                               .enum_name_uses_string_view()
-                          ? "::absl::string_view"
+                          ? "::std::string_view"
                           : "const std::string&"},
   };
 }
@@ -243,14 +243,14 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
 
   if (has_reflection_) {
     p->Emit(R"cc(
-      inline bool $Msg_Enum$_Parse(absl::string_view name, $Msg_Enum$* value) {
+      inline bool $Msg_Enum$_Parse(std::string_view name, $Msg_Enum$* value) {
         return ::$proto_ns$::internal::ParseNamedEnum<$Msg_Enum$>(
             $Msg_Enum$_descriptor(), name, value);
       }
     )cc");
   } else {
     p->Emit(R"cc(
-      bool $Msg_Enum$_Parse(absl::string_view name, $Msg_Enum$* value);
+      bool $Msg_Enum$_Parse(std::string_view name, $Msg_Enum$* value);
     )cc");
   }
 }
@@ -333,7 +333,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
     static inline $return_type$ $Enum$_Name(T value) {
       return $Msg_Enum$_Name(value);
     }
-    static inline bool $Enum$_Parse(absl::string_view name, $Enum_$* value) {
+    static inline bool $Enum$_Parse(std::string_view name, $Enum_$* value) {
       return $Msg_Enum$_Parse(name, value);
     }
   )cc");
@@ -536,7 +536,7 @@ void EnumGenerator::GenerateMethods(int idx, io::Printer* p) {
                              : $Msg_Enum$_strings[idx].get();
           }
 
-          bool $Msg_Enum$_Parse(absl::string_view name, $Msg_Enum$* value) {
+          bool $Msg_Enum$_Parse(std::string_view name, $Msg_Enum$* value) {
             int int_value;
             bool success = ::$proto_ns$::internal::LookUpEnumValue(
                 $Msg_Enum$_entries, $num_declared$, name, &int_value);

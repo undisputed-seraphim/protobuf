@@ -20,8 +20,8 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/absl_check.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "absl/types/span.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
@@ -197,7 +197,7 @@ class FieldGeneratorBase {
   const FieldDescriptor* field_;
   const Options& options_;
   MessageSCCAnalyzer* scc_;
-  absl::flat_hash_map<absl::string_view, std::string> variables_;
+  absl::flat_hash_map<std::string_view, std::string> variables_;
 
  private:
   bool should_split_ = false;
@@ -493,8 +493,8 @@ class FieldGenerator {
   friend class FieldGeneratorTable;
   FieldGenerator(const FieldDescriptor* field, const Options& options,
                  MessageSCCAnalyzer* scc_analyzer,
-                 absl::optional<uint32_t> hasbit_index,
-                 absl::optional<uint32_t> inlined_string_index);
+                 std::optional<uint32_t> hasbit_index,
+                 std::optional<uint32_t> inlined_string_index);
 
   std::unique_ptr<FieldGeneratorBase> impl_;
   std::vector<io::Printer::Sub> field_vars_;

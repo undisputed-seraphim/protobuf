@@ -35,7 +35,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/cpp/enum.h"
 #include "google/protobuf/compiler/cpp/extension.h"
 #include "google/protobuf/compiler/cpp/field.h"
@@ -74,7 +74,7 @@ static constexpr int kNoHasbit = -1;
 // masks must be non-zero.
 std::string ConditionalToCheckBitmasks(
     const std::vector<uint32_t>& masks, bool return_success = true,
-    absl::string_view has_bits_var = "_impl_._has_bits_") {
+    std::string_view has_bits_var = "_impl_._has_bits_") {
   std::vector<std::string> parts;
   for (size_t i = 0; i < masks.size(); ++i) {
     if (masks[i] == 0) continue;
@@ -270,9 +270,9 @@ bool HasInternalHasMethod(const FieldDescriptor* field) {
 // Collects map entry message type information.
 void CollectMapInfo(
     const Options& options, const Descriptor* descriptor,
-    absl::flat_hash_map<absl::string_view, std::string>* variables) {
+    absl::flat_hash_map<std::string_view, std::string>* variables) {
   ABSL_CHECK(IsMapEntryMessage(descriptor));
-  absl::flat_hash_map<absl::string_view, std::string>& vars = *variables;
+  absl::flat_hash_map<std::string_view, std::string>& vars = *variables;
   const FieldDescriptor* key = descriptor->map_key();
   const FieldDescriptor* val = descriptor->map_value();
   vars["key_cpp"] = PrimitiveTypeName(options, key->cpp_type());
@@ -534,7 +534,7 @@ std::vector<Sub> ClassVars(const Descriptor* desc, Options opts) {
 
 MessageGenerator::MessageGenerator(
     const Descriptor* descriptor,
-    const absl::flat_hash_map<absl::string_view, std::string>&,
+    const absl::flat_hash_map<std::string_view, std::string>&,
     int index_in_file_messages, const Options& options,
     MessageSCCAnalyzer* scc_analyzer)
     : descriptor_(descriptor),
@@ -607,7 +607,7 @@ size_t MessageGenerator::InlinedStringDonatedSize() const {
   return (max_inlined_string_index_ + 31) / 32;
 }
 
-absl::flat_hash_map<absl::string_view, std::string>
+absl::flat_hash_map<std::string_view, std::string>
 MessageGenerator::HasBitVars(const FieldDescriptor* field) const {
   int has_bit_index = HasBitIndex(field);
   ABSL_CHECK_NE(has_bit_index, kNoHasbit);
@@ -1192,7 +1192,7 @@ class AccessorVerifier {
     ABSL_CHECK(!needs_weak_descriptor_pin_) << Error(SourceLocation::current());
   }
 
-  void operator()(absl::string_view label, io::Printer::SourceLocation loc) {
+  void operator()(std::string_view label, io::Printer::SourceLocation loc) {
     if (label == "name" || label == "release_name") {
       // All accessors use $name$ or $release_name$ when constructing the
       // function name. We hook into those to determine that an accessor is
@@ -1353,7 +1353,7 @@ void MessageGenerator::GenerateAnnotationDecl(io::Printer* p) {
 
 void MessageGenerator::GenerateMapEntryClassDefinition(io::Printer* p) {
   Formatter format(p);
-  absl::flat_hash_map<absl::string_view, std::string> vars;
+  absl::flat_hash_map<std::string_view, std::string> vars;
   CollectMapInfo(options_, descriptor_, &vars);
   ABSL_CHECK(HasDescriptorMethods(descriptor_->file(), options_));
   auto v = p->WithVars(std::move(vars));
@@ -1610,7 +1610,7 @@ void MessageGenerator::GenerateAnyMethodDefinition(io::Printer* p) {
                         message, mutable_type_url(), _internal_mutable_value());
                   }
                   bool PackFrom(const ::$proto_ns$::Message& message,
-                                ::absl::string_view type_url_prefix) {
+                                ::std::string_view type_url_prefix) {
                     $DCHK$_NE(&message, this);
                     return ::$proto_ns$::internal::InternalPackFrom(
                         message, type_url_prefix, mutable_type_url(),
@@ -1637,7 +1637,7 @@ void MessageGenerator::GenerateAnyMethodDefinition(io::Printer* p) {
                       class = typename std::enable_if<!std::is_convertible<
                           T, const ::$proto_ns$::Message&>::value>::type>
                   bool PackFrom(const T& message,
-                                ::absl::string_view type_url_prefix) {
+                                ::std::string_view type_url_prefix) {
                     return ::$proto_ns$::internal::InternalPackFrom<T>(
                         message, type_url_prefix, mutable_type_url(),
                         _internal_mutable_value());
@@ -1661,7 +1661,7 @@ void MessageGenerator::GenerateAnyMethodDefinition(io::Printer* p) {
                   }
                   template <typename T>
                   bool PackFrom(const T& message,
-                                ::absl::string_view type_url_prefix) {
+                                ::std::string_view type_url_prefix) {
                     return ::$proto_ns$::internal::InternalPackFrom(
                         message, type_url_prefix, mutable_type_url(),
                         _internal_mutable_value());
@@ -1684,7 +1684,7 @@ void MessageGenerator::GenerateAnyMethodDefinition(io::Printer* p) {
         bool Is() const {
           return ::$proto_ns$::internal::InternalIs<T>(_internal_type_url());
         }
-        static bool ParseAnyTypeUrl(::absl::string_view type_url,
+        static bool ParseAnyTypeUrl(::std::string_view type_url,
                                     std::string* full_type_name);
       )cc");
 }
@@ -2149,12 +2149,12 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
           //~ NOTE: parentheses around the symbol GetAnyMessageName is required
           //~       for compiler to resolve the symbol correctly and interpret
           //~       it as a function (instead of trying to find the symbol under
-          //~       the absl::string_view namespace).
+          //~       the std::string_view namespace).
          private:
           template <typename T>
-          friend ::absl::string_view(
+          friend ::std::string_view(
               ::$proto_ns$::internal::GetAnyMessageName)();
-          static ::absl::string_view FullMessageName() { return "$full_name$"; }
+          static ::std::string_view FullMessageName() { return "$full_name$"; }
           $decl_annotate$;
 
           //~ TODO Make this private! Currently people are
@@ -2320,7 +2320,7 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
               }}},
             R"cc(
               $any_field_descriptor$;
-              bool $classname$::ParseAnyTypeUrl(::absl::string_view type_url,
+              bool $classname$::ParseAnyTypeUrl(::std::string_view type_url,
                                                 std::string* full_type_name) {
                 return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);
               }
@@ -3824,7 +3824,7 @@ MessageGenerator::NewOpRequirements MessageGenerator::GetNewOp(
   }
 
   for (const FieldDescriptor* field : FieldRange(descriptor_)) {
-    const auto print_arena_offset = [&](absl::string_view suffix = "") {
+    const auto print_arena_offset = [&](std::string_view suffix = "") {
       ++arena_seeding_count;
       if (arena_emitter) {
         arena_emitter->Emit(

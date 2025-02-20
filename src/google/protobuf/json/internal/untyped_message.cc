@@ -24,10 +24,10 @@
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "absl/types/span.h"
-#include "absl/types/variant.h"
+#include <variant>
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/util/type_resolver.h"
@@ -84,7 +84,7 @@ absl::Span<const ResolverPool::Field> ResolverPool::Message::FieldsByIndex()
 }
 
 const ResolverPool::Field* ResolverPool::Message::FindField(
-    absl::string_view name) const {
+    std::string_view name) const {
   if (raw_.fields_size() == 0) {
     return nullptr;
   }
@@ -130,7 +130,7 @@ const ResolverPool::Field* ResolverPool::Message::FindField(
 }
 
 absl::StatusOr<const ResolverPool::Message*> ResolverPool::FindMessage(
-    absl::string_view url) {
+    std::string_view url) {
   auto it = messages_.find(url);
   if (it != messages_.end()) {
     return it->second.get();
@@ -145,7 +145,7 @@ absl::StatusOr<const ResolverPool::Message*> ResolverPool::FindMessage(
 }
 
 absl::StatusOr<const ResolverPool::Enum*> ResolverPool::FindEnum(
-    absl::string_view url) {
+    std::string_view url) {
   auto it = enums_.find(url);
   if (it != enums_.end()) {
     return it->second.get();
@@ -202,7 +202,7 @@ PROTOBUF_NOINLINE static absl::Status MakeTooDeepError() {
 }
 
 absl::Status UntypedMessage::Decode(io::CodedInputStream& stream,
-                                    absl::optional<int32_t> current_group) {
+                                    std::optional<int32_t> current_group) {
   std::vector<int32_t> group_stack;
   while (true) {
     uint32_t tag = stream.ReadTag();
@@ -548,7 +548,7 @@ absl::Status UntypedMessage::InsertField(const ResolverPool::Field& field,
   } else if (auto* extant = absl::get_if<std::vector<value_type>>(&slot)) {
     extant->push_back(std::forward<T>(value));
   } else {
-    absl::optional<absl::string_view> name =
+    std::optional<std::string_view> name =
         google::protobuf::internal::RttiTypeName<value_type>();
     if (!name.has_value()) {
       name = "<unknown>";

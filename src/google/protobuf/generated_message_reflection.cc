@@ -29,7 +29,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/synchronization/mutex.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
@@ -101,7 +101,7 @@ void InitializeFileDescriptorDefaultInstances() {
 void InitializeLazyExtensionSet() {
 }
 
-bool ParseNamedEnum(const EnumDescriptor* descriptor, absl::string_view name,
+bool ParseNamedEnum(const EnumDescriptor* descriptor, std::string_view name,
                     int* value) {
   const EnumValueDescriptor* d = descriptor->FindValueByName(name);
   if (d == nullptr) return false;
@@ -1915,7 +1915,7 @@ absl::Cord Reflection::GetCord(const Message& message,
   }
 }
 
-absl::string_view Reflection::GetStringView(const Message& message,
+std::string_view Reflection::GetStringView(const Message& message,
                                             const FieldDescriptor* field,
                                             ScratchSpace& scratch) const {
   USAGE_CHECK_ALL(GetStringView, SINGULAR, STRING);
@@ -2084,7 +2084,7 @@ const std::string& Reflection::GetRepeatedStringReference(
 }
 
 // See GetStringView(), above.
-absl::string_view Reflection::GetRepeatedStringView(
+std::string_view Reflection::GetRepeatedStringView(
     const Message& message, const FieldDescriptor* field, int index,
     ScratchSpace& scratch) const {
   (void)scratch;
@@ -2758,7 +2758,7 @@ int Reflection::MapSize(const Message& message,
 // -----------------------------------------------------------------------------
 
 const FieldDescriptor* Reflection::FindKnownExtensionByName(
-    absl::string_view name) const {
+    std::string_view name) const {
   if (!schema_.HasExtensionSet()) return nullptr;
   return descriptor_pool_->FindExtensionByPrintableName(descriptor_, name);
 }

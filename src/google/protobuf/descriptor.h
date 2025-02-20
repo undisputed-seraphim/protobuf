@@ -49,7 +49,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/synchronization/mutex.h"
 #include "absl/types/optional.h"
 #include "google/protobuf/descriptor_lite.h"
@@ -196,7 +196,7 @@ namespace internal {
 
 // `typedef` instead of `using` for SWIG
 #if defined(PROTOBUF_FUTURE_STRING_VIEW_RETURN_TYPE)
-typedef absl::string_view DescriptorStringView;
+typedef std::string_view DescriptorStringView;
 #else
 typedef const std::string& DescriptorStringView;
 #endif
@@ -223,7 +223,7 @@ class PROTOBUF_EXPORT LazyDescriptor {
   // build time if the symbol wasn't found and building of the file containing
   // that type is delayed because lazily_build_dependencies_ is set on the pool.
   // Should not be called after Set() has been called.
-  void SetLazy(absl::string_view name, const FileDescriptor* file);
+  void SetLazy(std::string_view name, const FileDescriptor* file);
 
   // Returns the current value of the descriptor, thread-safe. If SetLazy(...)
   // has been called, will do a one-time cross link of the type specified,
@@ -289,7 +289,7 @@ class PROTOBUF_EXPORT InternalFeatureHelper {
   static Edition GetEdition(const FileDescriptor& desc);
 };
 
-PROTOBUF_EXPORT absl::string_view ShortEditionName(Edition edition);
+PROTOBUF_EXPORT std::string_view ShortEditionName(Edition edition);
 
 bool IsEnumFullySequential(const EnumDescriptor* enum_desc);
 
@@ -416,20 +416,20 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
   // exists.
   const FieldDescriptor* FindFieldByNumber(int number) const;
   // Looks up a field by name.  Returns nullptr if no such field exists.
-  const FieldDescriptor* FindFieldByName(absl::string_view name) const;
+  const FieldDescriptor* FindFieldByName(std::string_view name) const;
 
   // Looks up a field by lowercased name (as returned by lowercase_name()).
   // This lookup may be ambiguous if multiple field names differ only by case,
   // in which case the field returned is chosen arbitrarily from the matches.
   const FieldDescriptor* FindFieldByLowercaseName(
-      absl::string_view lowercase_name) const;
+      std::string_view lowercase_name) const;
 
   // Looks up a field by camel-case name (as returned by camelcase_name()).
   // This lookup may be ambiguous if multiple field names differ in a way that
   // leads them to have identical camel-case names, in which case the field
   // returned is chosen arbitrarily from the matches.
   const FieldDescriptor* FindFieldByCamelcaseName(
-      absl::string_view camelcase_name) const;
+      std::string_view camelcase_name) const;
 
   // The number of oneofs in this message type.
   int oneof_decl_count() const;
@@ -446,7 +446,7 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
   const OneofDescriptor* real_oneof_decl(int index) const;
 
   // Looks up a oneof by name.  Returns nullptr if no such oneof exists.
-  const OneofDescriptor* FindOneofByName(absl::string_view name) const;
+  const OneofDescriptor* FindOneofByName(std::string_view name) const;
 
   // Nested type stuff -----------------------------------------------
 
@@ -458,7 +458,7 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
 
   // Looks up a nested type by name.  Returns nullptr if no such nested type
   // exists.
-  const Descriptor* FindNestedTypeByName(absl::string_view name) const;
+  const Descriptor* FindNestedTypeByName(std::string_view name) const;
 
   // Enum stuff ------------------------------------------------------
 
@@ -470,11 +470,11 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
 
   // Looks up an enum type by name.  Returns nullptr if no such enum type
   // exists.
-  const EnumDescriptor* FindEnumTypeByName(absl::string_view name) const;
+  const EnumDescriptor* FindEnumTypeByName(std::string_view name) const;
 
   // Looks up an enum value by name, among all enum types in this message.
   // Returns nullptr if no such value exists.
-  const EnumValueDescriptor* FindEnumValueByName(absl::string_view name) const;
+  const EnumValueDescriptor* FindEnumValueByName(std::string_view name) const;
 
   // Extensions ------------------------------------------------------
 
@@ -590,17 +590,17 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
 
   // Looks up a named extension (which extends some *other* message type)
   // defined within this message type's scope.
-  const FieldDescriptor* FindExtensionByName(absl::string_view name) const;
+  const FieldDescriptor* FindExtensionByName(std::string_view name) const;
 
   // Similar to FindFieldByLowercaseName(), but finds extensions defined within
   // this message type's scope.
   const FieldDescriptor* FindExtensionByLowercaseName(
-      absl::string_view name) const;
+      std::string_view name) const;
 
   // Similar to FindFieldByCamelcaseName(), but finds extensions defined within
   // this message type's scope.
   const FieldDescriptor* FindExtensionByCamelcaseName(
-      absl::string_view name) const;
+      std::string_view name) const;
 
   // Reserved fields -------------------------------------------------
 
@@ -630,7 +630,7 @@ class PROTOBUF_EXPORT Descriptor : private internal::SymbolBase {
   internal::DescriptorStringView reserved_name(int index) const;
 
   // Returns true if the field name is reserved.
-  bool IsReservedName(absl::string_view name) const;
+  bool IsReservedName(std::string_view name) const;
 
   // Source Location ---------------------------------------------------
 
@@ -1325,7 +1325,7 @@ class PROTOBUF_EXPORT EnumDescriptor : private internal::SymbolBase {
   const EnumValueDescriptor* value(int index) const;
 
   // Looks up a value by name.  Returns nullptr if no such value exists.
-  const EnumValueDescriptor* FindValueByName(absl::string_view name) const;
+  const EnumValueDescriptor* FindValueByName(std::string_view name) const;
   // Looks up a value by number.  Returns nullptr if no such value exists.  If
   // multiple values have this number, the first one defined is returned.
   const EnumValueDescriptor* FindValueByNumber(int number) const;
@@ -1408,7 +1408,7 @@ class PROTOBUF_EXPORT EnumDescriptor : private internal::SymbolBase {
   internal::DescriptorStringView reserved_name(int index) const;
 
   // Returns true if the field name is reserved.
-  bool IsReservedName(absl::string_view name) const;
+  bool IsReservedName(std::string_view name) const;
 
   // Source Location ---------------------------------------------------
 
@@ -1643,7 +1643,7 @@ class PROTOBUF_EXPORT ServiceDescriptor : private internal::SymbolBase {
   const MethodDescriptor* method(int index) const;
 
   // Look up a MethodDescriptor by name.
-  const MethodDescriptor* FindMethodByName(absl::string_view name) const;
+  const MethodDescriptor* FindMethodByName(std::string_view name) const;
 
   // See Descriptor::CopyTo().
   void CopyTo(ServiceDescriptorProto* proto) const;
@@ -1899,25 +1899,25 @@ class PROTOBUF_EXPORT FileDescriptor : private internal::SymbolBase {
 
   // Find a top-level message type by name (not full_name).  Returns nullptr if
   // not found.
-  const Descriptor* FindMessageTypeByName(absl::string_view name) const;
+  const Descriptor* FindMessageTypeByName(std::string_view name) const;
   // Find a top-level enum type by name.  Returns nullptr if not found.
-  const EnumDescriptor* FindEnumTypeByName(absl::string_view name) const;
+  const EnumDescriptor* FindEnumTypeByName(std::string_view name) const;
   // Find an enum value defined in any top-level enum by name.  Returns nullptr
   // if not found.
-  const EnumValueDescriptor* FindEnumValueByName(absl::string_view name) const;
+  const EnumValueDescriptor* FindEnumValueByName(std::string_view name) const;
   // Find a service definition by name.  Returns nullptr if not found.
-  const ServiceDescriptor* FindServiceByName(absl::string_view name) const;
+  const ServiceDescriptor* FindServiceByName(std::string_view name) const;
   // Find a top-level extension definition by name.  Returns nullptr if not
   // found.
-  const FieldDescriptor* FindExtensionByName(absl::string_view name) const;
+  const FieldDescriptor* FindExtensionByName(std::string_view name) const;
   // Similar to FindExtensionByName(), but searches by lowercased-name.  See
   // Descriptor::FindFieldByLowercaseName().
   const FieldDescriptor* FindExtensionByLowercaseName(
-      absl::string_view name) const;
+      std::string_view name) const;
   // Similar to FindExtensionByName(), but searches by camelcased-name.  See
   // Descriptor::FindFieldByCamelcaseName().
   const FieldDescriptor* FindExtensionByCamelcaseName(
-      absl::string_view name) const;
+      std::string_view name) const;
 
   // See Descriptor::CopyTo().
   // Notes:
@@ -2112,28 +2112,28 @@ class PROTOBUF_EXPORT DescriptorPool {
 
   // Find a FileDescriptor in the pool by file name.  Returns nullptr if not
   // found.
-  const FileDescriptor* FindFileByName(absl::string_view name) const;
+  const FileDescriptor* FindFileByName(std::string_view name) const;
 
   // Find the FileDescriptor in the pool which defines the given symbol.
   // If any of the Find*ByName() methods below would succeed, then this is
   // equivalent to calling that method and calling the result's file() method.
   // Otherwise this returns nullptr.
   const FileDescriptor* FindFileContainingSymbol(
-      absl::string_view symbol_name) const;
+      std::string_view symbol_name) const;
 
   // Looking up descriptors ------------------------------------------
   // These find descriptors by fully-qualified name.  These will find both
   // top-level descriptors and nested descriptors.  They return nullptr if not
   // found.
 
-  const Descriptor* FindMessageTypeByName(absl::string_view name) const;
-  const FieldDescriptor* FindFieldByName(absl::string_view name) const;
-  const FieldDescriptor* FindExtensionByName(absl::string_view name) const;
-  const OneofDescriptor* FindOneofByName(absl::string_view name) const;
-  const EnumDescriptor* FindEnumTypeByName(absl::string_view name) const;
-  const EnumValueDescriptor* FindEnumValueByName(absl::string_view name) const;
-  const ServiceDescriptor* FindServiceByName(absl::string_view name) const;
-  const MethodDescriptor* FindMethodByName(absl::string_view name) const;
+  const Descriptor* FindMessageTypeByName(std::string_view name) const;
+  const FieldDescriptor* FindFieldByName(std::string_view name) const;
+  const FieldDescriptor* FindExtensionByName(std::string_view name) const;
+  const OneofDescriptor* FindOneofByName(std::string_view name) const;
+  const EnumDescriptor* FindEnumTypeByName(std::string_view name) const;
+  const EnumValueDescriptor* FindEnumValueByName(std::string_view name) const;
+  const ServiceDescriptor* FindServiceByName(std::string_view name) const;
+  const MethodDescriptor* FindMethodByName(std::string_view name) const;
 
   // Finds an extension of the given type by number.  The extendee must be
   // a member of this DescriptorPool or one of its underlays.
@@ -2146,7 +2146,7 @@ class PROTOBUF_EXPORT DescriptorPool {
   // or one of its underlays.  Returns nullptr if there is no known message
   // extension with the given printable name.
   const FieldDescriptor* FindExtensionByPrintableName(
-      const Descriptor* extendee, absl::string_view printable_name) const;
+      const Descriptor* extendee, std::string_view printable_name) const;
 
   // Finds extensions of extendee. The extensions will be appended to
   // out in an undefined order. Only extensions defined directly in
@@ -2187,7 +2187,7 @@ class PROTOBUF_EXPORT DescriptorPool {
       EDITIONS,       // editions-related error
       OTHER           // some other problem
     };
-    static absl::string_view ErrorLocationName(ErrorLocation location);
+    static std::string_view ErrorLocationName(ErrorLocation location);
 
     // Reports an error in the FileDescriptorProto. Use this function if the
     // problem occurred should interrupt building the FileDescriptorProto.
@@ -2197,10 +2197,10 @@ class PROTOBUF_EXPORT DescriptorPool {
     // descriptor - Descriptor of the erroneous element.
     // location - One of the location constants, above.
     // message - Human-readable error message.
-    virtual void RecordError(absl::string_view filename,
-                             absl::string_view element_name,
+    virtual void RecordError(std::string_view filename,
+                             std::string_view element_name,
                              const Message* descriptor, ErrorLocation location,
-                             absl::string_view message)
+                             std::string_view message)
         = 0;
 
     // Reports a warning in the FileDescriptorProto. Use this function if the
@@ -2211,11 +2211,11 @@ class PROTOBUF_EXPORT DescriptorPool {
     // descriptor - Descriptor of the erroneous element.
     // location - One of the location constants, above.
     // message - Human-readable error message.
-    virtual void RecordWarning(absl::string_view filename,
-                               absl::string_view element_name,
+    virtual void RecordWarning(std::string_view filename,
+                               std::string_view element_name,
                                const Message* descriptor,
                                ErrorLocation location,
-                               absl::string_view message) {
+                               std::string_view message) {
     }
 
   };
@@ -2368,18 +2368,18 @@ class PROTOBUF_EXPORT DescriptorPool {
   // For internal (unit test) use only:  Returns true if a FileDescriptor has
   // been constructed for the given file, false otherwise.  Useful for testing
   // lazy descriptor initialization behavior.
-  bool InternalIsFileLoaded(absl::string_view filename) const;
+  bool InternalIsFileLoaded(std::string_view filename) const;
 
   // Add a file to to apply more strict checks to.
   // - unused imports will log either warnings or errors.
   // - deprecated features will log warnings.
-  void AddDirectInputFile(absl::string_view file_name,
+  void AddDirectInputFile(std::string_view file_name,
                           bool unused_import_is_error = false);
   void ClearDirectInputFiles();
 
 #if !defined(PROTOBUF_FUTURE_RENAME_ADD_UNUSED_IMPORT) && !defined(SWIG)
   ABSL_DEPRECATED("Use AddDirectInputFile")
-  void AddUnusedImportTrackFile(absl::string_view file_name,
+  void AddUnusedImportTrackFile(std::string_view file_name,
                                 bool is_error = false) {
     AddDirectInputFile(file_name, is_error);
   }
@@ -2404,7 +2404,7 @@ class PROTOBUF_EXPORT DescriptorPool {
   // Return true if the given name is a sub-symbol of any non-package
   // descriptor that already exists in the descriptor pool.  (The full
   // definition of such types is already known.)
-  bool IsSubSymbolOfBuiltType(absl::string_view name) const;
+  bool IsSubSymbolOfBuiltType(std::string_view name) const;
 
   // Tries to find something in the fallback database and link in the
   // corresponding proto file.  Returns true if successful, in which case
@@ -2415,9 +2415,9 @@ class PROTOBUF_EXPORT DescriptorPool {
   // reflective operations that also require the lock to do safely.
   class DeferredValidation;
   bool TryFindFileInFallbackDatabase(
-      absl::string_view name, DeferredValidation& deferred_validation) const;
+      std::string_view name, DeferredValidation& deferred_validation) const;
   bool TryFindSymbolInFallbackDatabase(
-      absl::string_view name, DeferredValidation& deferred_validation) const;
+      std::string_view name, DeferredValidation& deferred_validation) const;
   bool TryFindExtensionInFallbackDatabase(
       const Descriptor* containing_type, int field_number,
       DeferredValidation& deferred_validation) const;
@@ -2440,13 +2440,13 @@ class PROTOBUF_EXPORT DescriptorPool {
   // symbol is defined if necessary. Will create a placeholder if the type
   // doesn't exist in the fallback database, or the file doesn't build
   // successfully.
-  Symbol CrossLinkOnDemandHelper(absl::string_view name,
+  Symbol CrossLinkOnDemandHelper(std::string_view name,
                                  bool expecting_enum) const;
 
   // Create a placeholder FileDescriptor of the specified name
-  FileDescriptor* NewPlaceholderFile(absl::string_view name) const;
+  FileDescriptor* NewPlaceholderFile(std::string_view name) const;
   FileDescriptor* NewPlaceholderFileWithMutexHeld(
-      absl::string_view name, internal::FlatAllocator& alloc) const;
+      std::string_view name, internal::FlatAllocator& alloc) const;
 
   enum PlaceholderType {
     PLACEHOLDER_MESSAGE,
@@ -2454,9 +2454,9 @@ class PROTOBUF_EXPORT DescriptorPool {
     PLACEHOLDER_EXTENDABLE_MESSAGE
   };
   // Create a placeholder Descriptor of the specified name
-  Symbol NewPlaceholder(absl::string_view name,
+  Symbol NewPlaceholder(std::string_view name,
                         PlaceholderType placeholder_type) const;
-  Symbol NewPlaceholderWithMutexHeld(absl::string_view name,
+  Symbol NewPlaceholderWithMutexHeld(std::string_view name,
                                      PlaceholderType placeholder_type) const;
 
   // If fallback_database_ is nullptr, this is nullptr.  Otherwise, this is a
@@ -2498,7 +2498,7 @@ class PROTOBUF_EXPORT DescriptorPool {
 
   // Returns true if the field extends an option message of descriptor.proto.
   bool IsReadyForCheckingDescriptorExtDecl(
-      absl::string_view message_name) const;
+      std::string_view message_name) const;
 
 };
 
@@ -2660,9 +2660,9 @@ inline bool Descriptor::IsReservedNumber(int number) const {
   return FindReservedRangeContainingNumber(number) != nullptr;
 }
 
-inline bool Descriptor::IsReservedName(absl::string_view name) const {
+inline bool Descriptor::IsReservedName(std::string_view name) const {
   for (int i = 0; i < reserved_name_count(); i++) {
-    if (name == static_cast<absl::string_view>(reserved_name(i))) {
+    if (name == static_cast<std::string_view>(reserved_name(i))) {
       return true;
     }
   }
@@ -2680,9 +2680,9 @@ inline bool EnumDescriptor::IsReservedNumber(int number) const {
   return FindReservedRangeContainingNumber(number) != nullptr;
 }
 
-inline bool EnumDescriptor::IsReservedName(absl::string_view name) const {
+inline bool EnumDescriptor::IsReservedName(std::string_view name) const {
   for (int i = 0; i < reserved_name_count(); i++) {
-    if (name == static_cast<absl::string_view>(reserved_name(i))) {
+    if (name == static_cast<std::string_view>(reserved_name(i))) {
       return true;
     }
   }
@@ -2930,7 +2930,7 @@ struct FieldRangeImpl {
 // to the reflection based method, which requires the Descriptor. However, while
 // building the descriptors, this causes deadlock. We also must disable lazy
 // parsing because that uses reflection to verify consistency.
-bool ParseNoReflection(absl::string_view from, google::protobuf::MessageLite& to);
+bool ParseNoReflection(std::string_view from, google::protobuf::MessageLite& to);
 
 // The context for these functions under `cpp` is "for the C++ implementation".
 // In particular, questions like "does this field have a has bit?" have a
@@ -2982,7 +2982,7 @@ PROTOBUF_EXPORT bool IsGroupLike(const FieldDescriptor& field);
 // Returns whether or not this file is lazily initialized rather than
 // pre-main via static initialization.  This has to be done for our bootstrapped
 // protos to avoid linker bloat in lite runtimes.
-PROTOBUF_EXPORT bool IsLazilyInitializedFile(absl::string_view filename);
+PROTOBUF_EXPORT bool IsLazilyInitializedFile(std::string_view filename);
 
 // Returns true during internal calls that should avoid calling trackers.  These
 // calls can be particularly dangerous during build steps like feature

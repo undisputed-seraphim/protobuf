@@ -11,8 +11,8 @@
 #include "google/protobuf/descriptor.pb.h"
 #include "google/protobuf/testing/googletest.h"
 #include <gtest/gtest.h>
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 
 // Utilities that assist in writing tests for generator annotations.
 // See java/internal/annotation_unittest.cc for an example.
@@ -37,7 +37,7 @@ struct ExpectedOutput {
 
 // Creates a file with name `filename` and content `data` in temp test
 // directory.
-void AddFile(absl::string_view filename, absl::string_view data);
+void AddFile(std::string_view filename, std::string_view data);
 
 // Runs proto compiler. Captures proto file structure in FileDescriptorProto.
 // Files will be generated in TestTempDir() folder. Callers of this
@@ -79,7 +79,7 @@ bool AtLeastOneAnnotationMatchesSubstring(
     const std::string& file_content,
     const std::vector<const GeneratedCodeInfo::Annotation*>& annotations,
     const std::string& expected_text,
-    absl::optional<GeneratedCodeInfo::Annotation::Semantic> expected_semantic =
+    std::optional<GeneratedCodeInfo::Annotation::Semantic> expected_semantic =
         absl::nullopt);
 
 // Returns true if the provided annotation covers a given substring in
@@ -90,8 +90,8 @@ bool AnnotationMatchesSubstring(const std::string& file_content,
 
 // Returns the text spanned by the annotation if the span is valid; otherwise
 // returns nullopt.
-absl::optional<absl::string_view> GetAnnotationSubstring(
-    absl::string_view file_content,
+std::optional<std::string_view> GetAnnotationSubstring(
+    std::string_view file_content,
     const GeneratedCodeInfo::Annotation& annotation);
 
 }  // namespace annotation_test_util

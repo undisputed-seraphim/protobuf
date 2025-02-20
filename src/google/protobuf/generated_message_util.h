@@ -31,8 +31,8 @@
 #include "google/protobuf/stubs/common.h"
 #include "absl/base/call_once.h"
 #include "absl/base/casts.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "google/protobuf/any.h"
 #include "google/protobuf/has_bits.h"
 #include "google/protobuf/implicit_weak_message.h"
@@ -358,7 +358,7 @@ inline void AssignToString(std::string& dest, const void* value,
                            std::size_t size, BytesTag tag) {
   dest.assign(reinterpret_cast<const char*>(value), size);
 }
-inline void AssignToString(std::string& dest, absl::string_view value,
+inline void AssignToString(std::string& dest, std::string_view value,
                            BytesTag tag = BytesTag{}) {
   dest.assign(value.data(), value.size());
 }
@@ -377,7 +377,7 @@ inline void AddToRepeatedPtrField(google::protobuf::RepeatedPtrField<std::string
   dest.Add(std::move(value));
 }
 
-constexpr absl::optional<uintptr_t> EncodePlacementArenaOffsets(
+constexpr std::optional<uintptr_t> EncodePlacementArenaOffsets(
     std::initializer_list<size_t> offsets) {
   uintptr_t arena_bits = 0;
   for (size_t offset : offsets) {

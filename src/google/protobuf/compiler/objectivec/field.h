@@ -16,7 +16,7 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/match.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/objectivec/options.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/io/printer.h"
@@ -89,7 +89,7 @@ class FieldGenerator {
 
   const FieldDescriptor* descriptor_;
   const GenerationOptions& generation_options_;
-  absl::flat_hash_map<absl::string_view, std::string> variables_;
+  absl::flat_hash_map<std::string_view, std::string> variables_;
 };
 
 class SingleFieldGenerator : public FieldGenerator {

@@ -16,7 +16,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/strings/substitute.h"
 #include "google/protobuf/compiler/cpp/field.h"
 #include "google/protobuf/compiler/cpp/field_generators/generators.h"
@@ -46,7 +46,7 @@ std::vector<Sub> Vars(const FieldDescriptor* field, const Options& opts,
       QualifiedDefaultInstanceName(field->message_type(), opts);
   std::string default_ptr =
       QualifiedDefaultInstancePtr(field->message_type(), opts);
-  absl::string_view base = "::google::protobuf::MessageLite";
+  std::string_view base = "::google::protobuf::MessageLite";
 
   return {
       {"Submsg", qualified_type},

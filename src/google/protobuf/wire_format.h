@@ -22,7 +22,7 @@
 #include "absl/base/casts.h"
 #include "absl/log/absl_check.h"
 #include "absl/strings/cord.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/generated_message_util.h"
 #include "google/protobuf/io/coded_stream.h"
@@ -267,7 +267,7 @@ class PROTOBUF_EXPORT WireFormat {
   // informative error message if verification fails.
   static void VerifyUTF8StringNamedField(const char* data, int size,
                                          Operation op,
-                                         absl::string_view field_name);
+                                         std::string_view field_name);
 
  private:
   struct MessageSetParser;
@@ -354,7 +354,7 @@ inline void WireFormat::VerifyUTF8String(const char* data, int size,
 
 inline void WireFormat::VerifyUTF8StringNamedField(
     const char* data, int size, WireFormat::Operation op,
-    const absl::string_view field_name) {
+    const std::string_view field_name) {
 #ifdef GOOGLE_PROTOBUF_UTF8_VALIDATION_ENABLED
   WireFormatLite::VerifyUtf8String(
       data, size, static_cast<WireFormatLite::Operation>(op), field_name);

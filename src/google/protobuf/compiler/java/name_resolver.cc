@@ -37,7 +37,7 @@ const char* kOuterClassNameSuffix = "OuterClass";
 //   Full name   : foo.Bar.Baz
 //   Package name: foo
 //   After strip : Bar.Baz
-absl::string_view StripPackageName(absl::string_view full_name,
+std::string_view StripPackageName(std::string_view full_name,
                                    const FileDescriptor* file) {
   if (file->package().empty()) {
     return full_name;
@@ -81,7 +81,7 @@ std::string ClassNameWithoutPackage(const EnumDescriptor* descriptor,
 // Get the name of a service's Java class without package name prefix.
 std::string ClassNameWithoutPackage(const ServiceDescriptor* descriptor,
                                     bool immutable) {
-  absl::string_view full_name =
+  std::string_view full_name =
       StripPackageName(descriptor->full_name(), descriptor->file());
   // We don't allow nested service definitions.
   ABSL_CHECK(!absl::StrContains(full_name, '.'));
@@ -89,7 +89,7 @@ std::string ClassNameWithoutPackage(const ServiceDescriptor* descriptor,
 }
 
 // Return true if a and b are equals (case insensitive).
-NameEquality CheckNameEquality(absl::string_view a, absl::string_view b) {
+NameEquality CheckNameEquality(std::string_view a, std::string_view b) {
   if (absl::AsciiStrToUpper(a) == absl::AsciiStrToUpper(b)) {
     if (a == b) {
       return NameEquality::EXACT_EQUAL;
@@ -101,7 +101,7 @@ NameEquality CheckNameEquality(absl::string_view a, absl::string_view b) {
 
 // Check whether a given message or its nested types has the given class name.
 bool MessageHasConflictingClassName(const Descriptor* message,
-                                    absl::string_view classname,
+                                    std::string_view classname,
                                     NameEquality equality_mode) {
   if (CheckNameEquality(message->name(), classname) == equality_mode) {
     return true;
@@ -171,7 +171,7 @@ std::string ClassNameResolver::GetFileClassName(const FileDescriptor* file,
 // Check whether there is any type defined in the proto file that has
 // the given class name.
 bool ClassNameResolver::HasConflictingClassName(const FileDescriptor* file,
-                                                absl::string_view classname,
+                                                std::string_view classname,
                                                 NameEquality equality_mode) {
   for (int i = 0; i < file->enum_type_count(); i++) {
     if (CheckNameEquality(file->enum_type(i)->name(), classname) ==
@@ -219,14 +219,14 @@ std::string ClassNameResolver::GetClassName(const FileDescriptor* descriptor,
 // Get the full name of a Java class by prepending the Java package name
 // or outer class name.
 std::string ClassNameResolver::GetClassFullName(
-    absl::string_view name_without_package, const FileDescriptor* file,
+    std::string_view name_without_package, const FileDescriptor* file,
     bool immutable, bool is_own_file) {
   return GetClassFullName(name_without_package, file, immutable, is_own_file,
                           false);
 }
 
 std::string ClassNameResolver::GetClassFullName(
-    absl::string_view name_without_package, const FileDescriptor* file,
+    std::string_view name_without_package, const FileDescriptor* file,
     bool immutable, bool is_own_file, bool kotlin) {
   std::string result;
   if (is_own_file) {
@@ -280,13 +280,13 @@ std::string ClassNameResolver::GetClassName(const ServiceDescriptor* descriptor,
 
 // Get the Java Class style full name of a message.
 std::string ClassNameResolver::GetJavaClassFullName(
-    absl::string_view name_without_package, const FileDescriptor* file,
+    std::string_view name_without_package, const FileDescriptor* file,
     bool immutable) {
   return GetJavaClassFullName(name_without_package, file, immutable, false);
 }
 
 std::string ClassNameResolver::GetJavaClassFullName(
-    absl::string_view name_without_package, const FileDescriptor* file,
+    std::string_view name_without_package, const FileDescriptor* file,
     bool immutable, bool kotlin) {
   std::string result;
   if (MultipleJavaFiles(file, immutable)) {

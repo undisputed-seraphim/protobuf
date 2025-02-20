@@ -11,7 +11,7 @@
 
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/strings/strip.h"
 #include "google/protobuf/compiler/java/field_common.h"
 #include "google/protobuf/compiler/java/helpers.h"
@@ -35,8 +35,8 @@ ClassNameResolver* Context::GetNameResolver() const {
 }
 
 namespace {
-bool EqualWithSuffix(absl::string_view name1, absl::string_view suffix,
-                     absl::string_view name2) {
+bool EqualWithSuffix(std::string_view name1, std::string_view suffix,
+                     std::string_view name2) {
   if (!absl::ConsumeSuffix(&name2, suffix)) return false;
   return name1 == name2;
 }
@@ -44,8 +44,8 @@ bool EqualWithSuffix(absl::string_view name1, absl::string_view suffix,
 // Whether two fields have conflicting accessors (assuming name1 and name2
 // are different). name1 and name2 are field1 and field2's camel-case name
 // respectively.
-bool IsConflicting(const FieldDescriptor* field1, absl::string_view name1,
-                   const FieldDescriptor* field2, absl::string_view name2,
+bool IsConflicting(const FieldDescriptor* field1, std::string_view name1,
+                   const FieldDescriptor* field2, std::string_view name2,
                    std::string* info) {
   if (field1->is_repeated()) {
     if (field2->is_repeated()) {

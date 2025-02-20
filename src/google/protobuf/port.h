@@ -26,8 +26,8 @@
 #include "absl/base/config.h"
 #include "absl/base/prefetch.h"
 #include "absl/meta/type_traits.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 
 // must be last
 #include "google/protobuf/port_def.inc"
@@ -178,7 +178,7 @@ void AssertDownCast(From* from) {
   // Check that this function is not used to downcast message types.
   // For those we should use {Down,Dynamic}CastTo{Message,Generated}.
   static_assert(!requires {
-    std::derived_from<std::remove_pointer_t<To>,
+    requires std::derived_from<std::remove_pointer_t<To>,
                       typename std::remove_pointer_t<To>::MessageLite>;
   });
 #endif
@@ -203,7 +203,7 @@ inline ToRef DownCast(From& f) {
 
 // Looks up the name of `T` via RTTI, if RTTI is available.
 template <typename T>
-inline absl::optional<absl::string_view> RttiTypeName() {
+inline std::optional<std::string_view> RttiTypeName() {
 #if PROTOBUF_RTTI
   return typeid(T).name();
 #else
@@ -423,13 +423,13 @@ constexpr bool IsOss() { return true; }
 // }
 class PROTOBUF_EXPORT RealDebugCounter {
  public:
-  explicit RealDebugCounter(absl::string_view name) { Register(name); }
+  explicit RealDebugCounter(std::string_view name) { Register(name); }
   // Lossy increment.
   void Inc() { counter_.store(value() + 1, std::memory_order_relaxed); }
   size_t value() const { return counter_.load(std::memory_order_relaxed); }
 
  private:
-  void Register(absl::string_view name);
+  void Register(std::string_view name);
   std::atomic<size_t> counter_{};
 };
 

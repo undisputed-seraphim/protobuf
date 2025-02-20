@@ -109,7 +109,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/numeric/bits.h"
 #include "absl/strings/cord.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/endian.h"
 
 // Must be included last.
@@ -867,7 +867,7 @@ class PROTOBUF_EXPORT EpsCopyOutputStream {
   uint8_t* WriteStringMaybeAliasedOutline(uint32_t num, const std::string& s,
                                           uint8_t* ptr);
   uint8_t* WriteStringOutline(uint32_t num, const std::string& s, uint8_t* ptr);
-  uint8_t* WriteStringOutline(uint32_t num, absl::string_view s, uint8_t* ptr);
+  uint8_t* WriteStringOutline(uint32_t num, std::string_view s, uint8_t* ptr);
   uint8_t* WriteCordOutline(const absl::Cord& c, uint8_t* ptr);
 
   template <typename T, typename E>

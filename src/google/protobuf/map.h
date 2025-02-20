@@ -35,7 +35,7 @@
 #include "absl/hash/hash.h"
 #include "absl/log/absl_check.h"
 #include "absl/meta/type_traits.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/arena.h"
 #include "google/protobuf/generated_enum_util.h"
 #include "google/protobuf/internal_visibility.h"
@@ -227,9 +227,9 @@ struct TransparentSupport {
 };
 
 // We add transparent support for std::string keys. We use
-// absl::Hash<absl::string_view> as it supports the input types we care about.
+// absl::Hash<std::string_view> as it supports the input types we care about.
 // The lookup functions accept arbitrary `K`. This will include any key type
-// that is convertible to absl::string_view.
+// that is convertible to std::string_view.
 template <>
 struct TransparentSupport<std::string> {
   // Use go/ranked-overloads for dispatching.
@@ -237,33 +237,33 @@ struct TransparentSupport<std::string> {
   struct Rank1 : Rank0 {};
   struct Rank2 : Rank1 {};
   template <typename T, typename = std::enable_if_t<
-                            std::is_convertible<T, absl::string_view>::value>>
-  static absl::string_view ImplicitConvertImpl(T&& str, Rank2) {
-    absl::string_view ref = str;
+                            std::is_convertible<T, std::string_view>::value>>
+  static std::string_view ImplicitConvertImpl(T&& str, Rank2) {
+    std::string_view ref = str;
     return ref;
   }
   template <typename T, typename = std::enable_if_t<
                             std::is_convertible<T, const std::string&>::value>>
-  static absl::string_view ImplicitConvertImpl(T&& str, Rank1) {
+  static std::string_view ImplicitConvertImpl(T&& str, Rank1) {
     const std::string& ref = str;
     return ref;
   }
   template <typename T>
-  static absl::string_view ImplicitConvertImpl(T&& str, Rank0) {
+  static std::string_view ImplicitConvertImpl(T&& str, Rank0) {
     return {str.data(), str.size()};
   }
 
   template <typename T>
-  static absl::string_view ImplicitConvert(T&& str) {
+  static std::string_view ImplicitConvert(T&& str) {
     return ImplicitConvertImpl(std::forward<T>(str), Rank2{});
   }
 
-  struct hash : public absl::Hash<absl::string_view> {
+  struct hash : public absl::Hash<std::string_view> {
     using is_transparent = void;
 
     template <typename T>
     size_t operator()(T&& str) const {
-      return absl::Hash<absl::string_view>::operator()(
+      return absl::Hash<std::string_view>::operator()(
           ImplicitConvert(std::forward<T>(str)));
     }
   };
@@ -277,7 +277,7 @@ struct TransparentSupport<std::string> {
   template <typename K>
   using key_arg = K;
 
-  using ViewType = absl::string_view;
+  using ViewType = std::string_view;
   template <typename T>
   static ViewType ToView(const T& v) {
     return ImplicitConvert(v);
@@ -343,7 +343,7 @@ struct VariantKey {
   uint64_t integral;
 
   explicit VariantKey(uint64_t v) : data(nullptr), integral(v) {}
-  explicit VariantKey(absl::string_view v)
+  explicit VariantKey(std::string_view v)
       : data(v.data()), integral(v.size()) {
     // We use `data` to discriminate between the types, so make sure it is never
     // null here.
@@ -391,7 +391,7 @@ struct RealKeyToVariantKey<std::string> {
 
 template <>
 struct RealKeyToVariantKeyAlternative<std::string> {
-  absl::string_view operator()(absl::string_view value) const { return value; }
+  std::string_view operator()(std::string_view value) const { return value; }
 };
 
 // We use a single kind of tree for all maps. This reduces code duplication.
@@ -700,11 +700,11 @@ class PROTOBUF_EXPORT UntypedMapBase {
   map_index_t VariantBucketNumber(VariantKey key) const {
     return key.data == nullptr
                ? VariantBucketNumber(key.integral)
-               : VariantBucketNumber(absl::string_view(
+               : VariantBucketNumber(std::string_view(
                      key.data, static_cast<size_t>(key.integral)));
   }
 
-  map_index_t VariantBucketNumber(absl::string_view key) const {
+  map_index_t VariantBucketNumber(std::string_view key) const {
     return static_cast<map_index_t>(absl::HashOf(seed_, key) &
                                     (num_buckets_ - 1));
   }

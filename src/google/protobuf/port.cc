@@ -14,7 +14,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 
 // Must be included last
 #include "google/protobuf/port_def.inc"
@@ -34,8 +34,8 @@ void protobuf_assumption_failed(const char* pred, const char* file, int line) {
 
 static void PrintAllCounters();
 static auto& CounterMap() {
-  using Map = std::map<absl::string_view,
-                       std::map<absl::string_view, const RealDebugCounter*>>;
+  using Map = std::map<std::string_view,
+                       std::map<std::string_view, const RealDebugCounter*>>;
   static auto* counter_map = new Map{};
   static bool dummy = std::atexit(PrintAllCounters);
   (void)dummy;
@@ -74,8 +74,8 @@ static void PrintAllCounters() {
   }
 }
 
-void RealDebugCounter::Register(absl::string_view name) {
-  std::pair<absl::string_view, absl::string_view> parts =
+void RealDebugCounter::Register(std::string_view name) {
+  std::pair<std::string_view, std::string_view> parts =
       absl::StrSplit(name, '.');
   CounterMap()[parts.first][parts.second] = this;
 }

@@ -42,7 +42,7 @@ namespace google {
 namespace protobuf {
 namespace internal {
 template <typename T>
-::absl::string_view GetAnyMessageName();
+::std::string_view GetAnyMessageName();
 }  // namespace internal
 }  // namespace protobuf
 }  // namespace google
@@ -90,7 +90,7 @@ inline const std::string& JavaFeatures_Utf8Validation_Name(JavaFeatures_Utf8Vali
                                                  0, 2>(
       static_cast<int>(value));
 }
-inline bool JavaFeatures_Utf8Validation_Parse(absl::string_view name, JavaFeatures_Utf8Validation* value) {
+inline bool JavaFeatures_Utf8Validation_Parse(std::string_view name, JavaFeatures_Utf8Validation* value) {
   return ::google::protobuf::internal::ParseNamedEnum<JavaFeatures_Utf8Validation>(
       JavaFeatures_Utf8Validation_descriptor(), name, value);
 }
@@ -223,9 +223,9 @@ class PROTOC_EXPORT JavaFeatures final : public ::google::protobuf::Message
   void InternalSwap(JavaFeatures* other);
  private:
   template <typename T>
-  friend ::absl::string_view(
+  friend ::std::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "pb.JavaFeatures"; }
+  static ::std::string_view FullMessageName() { return "pb.JavaFeatures"; }
 
  protected:
   explicit JavaFeatures(::google::protobuf::Arena* arena);
@@ -260,7 +260,7 @@ class PROTOC_EXPORT JavaFeatures final : public ::google::protobuf::Message
   static inline const std::string& Utf8Validation_Name(T value) {
     return JavaFeatures_Utf8Validation_Name(value);
   }
-  static inline bool Utf8Validation_Parse(absl::string_view name, Utf8Validation* value) {
+  static inline bool Utf8Validation_Parse(std::string_view name, Utf8Validation* value) {
     return JavaFeatures_Utf8Validation_Parse(name, value);
   }
 

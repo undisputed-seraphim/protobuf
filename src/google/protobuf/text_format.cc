@@ -35,7 +35,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/any.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
@@ -65,7 +65,7 @@ using internal::ScopedReflectionMode;
 
 namespace {
 
-const absl::string_view kFieldValueReplacement = "[REDACTED]";
+const std::string_view kFieldValueReplacement = "[REDACTED]";
 
 inline bool IsHexNumber(const std::string& str) {
   return (str.length() >= 2 && str[0] == '0' &&
@@ -423,7 +423,7 @@ class TextFormat::Parser::ParserImpl {
     return suc && LookingAtType(io::Tokenizer::TYPE_END);
   }
 
-  void ReportError(int line, int col, absl::string_view message) {
+  void ReportError(int line, int col, std::string_view message) {
     had_errors_ = true;
     if (error_collector_ == nullptr) {
       if (line >= 0) {
@@ -439,7 +439,7 @@ class TextFormat::Parser::ParserImpl {
     }
   }
 
-  void ReportWarning(int line, int col, const absl::string_view message) {
+  void ReportWarning(int line, int col, const std::string_view message) {
     if (error_collector_ == nullptr) {
       if (line >= 0) {
         ABSL_LOG_EVERY_POW_2(WARNING)
@@ -465,14 +465,14 @@ class TextFormat::Parser::ParserImpl {
 
   // Reports an error with the given message with information indicating
   // the position (as derived from the current token).
-  void ReportError(absl::string_view message) {
+  void ReportError(std::string_view message) {
     ReportError(tokenizer_.current().line, tokenizer_.current().column,
                 message);
   }
 
   // Reports a warning with the given message with information indicating
   // the position (as derived from the current token).
-  void ReportWarning(absl::string_view message) {
+  void ReportWarning(std::string_view message) {
     ReportWarning(tokenizer_.current().line, tokenizer_.current().column,
                   message);
   }
@@ -1414,12 +1414,12 @@ class TextFormat::Parser::ParserImpl {
     ParserErrorCollector& operator=(const ParserErrorCollector&) = delete;
     ~ParserErrorCollector() override {}
 
-    void RecordError(int line, int column, absl::string_view message) override {
+    void RecordError(int line, int column, std::string_view message) override {
       parser_->ReportError(line, column, message);
     }
 
     void RecordWarning(int line, int column,
-                       absl::string_view message) override {
+                       std::string_view message) override {
       parser_->ReportWarning(line, column, message);
     }
 
@@ -1537,15 +1537,15 @@ class TextFormat::Printer::TextGenerator
   // error.)
   bool failed() const { return failed_; }
 
-  void PrintMaybeWithMarker(MarkerToken, absl::string_view text) override {
+  void PrintMaybeWithMarker(MarkerToken, std::string_view text) override {
     Print(text.data(), text.size());
     if (ConsumeInsertSilentMarker()) {
       PrintLiteral(internal::kDebugStringSilentMarker);
     }
   }
 
-  void PrintMaybeWithMarker(MarkerToken, absl::string_view text_head,
-                            absl::string_view text_tail) override {
+  void PrintMaybeWithMarker(MarkerToken, std::string_view text_head,
+                            std::string_view text_tail) override {
     Print(text_head.data(), text_head.size());
     if (ConsumeInsertSilentMarker()) {
       PrintLiteral(internal::kDebugStringSilentMarker);
@@ -1688,7 +1688,7 @@ bool NeedsUtf8Validation(unsigned char ch) { return ch > 127; }
 // If we could get a variant of utf8_range::SpanStructurallyValid() that could
 // terminate on any of these chars, that might be more efficient, but it would
 // be much more complicated to modify that heavily SIMD code.
-size_t SkipPassthroughBytes(absl::string_view val) {
+size_t SkipPassthroughBytes(std::string_view val) {
   for (size_t i = 0; i < val.size(); i++) {
     unsigned char uc = val[i];
     if (DefinitelyNeedsEscape(uc)) return i;
@@ -1716,7 +1716,7 @@ size_t SkipPassthroughBytes(absl::string_view val) {
 }  // namespace
 
 void TextFormat::Printer::HardenedPrintString(
-    absl::string_view src, TextFormat::BaseTextGenerator* generator) {
+    std::string_view src, TextFormat::BaseTextGenerator* generator) {
   // Print as UTF-8, while guarding against any invalid UTF-8 in the string
   // field.
   //
@@ -1832,7 +1832,7 @@ bool TextFormat::Parser::Parse(io::ZeroCopyInputStream* input,
   return MergeUsingImpl(input, output, &parser);
 }
 
-bool TextFormat::Parser::ParseFromString(absl::string_view input,
+bool TextFormat::Parser::ParseFromString(std::string_view input,
                                          Message* output) {
   DO(CheckParseInputSize(input, error_collector_));
   io::ArrayInputStream input_stream(input.data(), input.size());
@@ -1857,7 +1857,7 @@ bool TextFormat::Parser::Merge(io::ZeroCopyInputStream* input,
   return MergeUsingImpl(input, output, &parser);
 }
 
-bool TextFormat::Parser::MergeFromString(absl::string_view input,
+bool TextFormat::Parser::MergeFromString(std::string_view input,
                                          Message* output) {
   DO(CheckParseInputSize(input, error_collector_));
   io::ArrayInputStream input_stream(input.data(), input.size());
@@ -1879,7 +1879,7 @@ bool TextFormat::Parser::MergeUsingImpl(io::ZeroCopyInputStream* /* input */,
   return true;
 }
 
-bool TextFormat::Parser::ParseFieldValueFromString(absl::string_view input,
+bool TextFormat::Parser::ParseFieldValueFromString(std::string_view input,
                                                    const FieldDescriptor* field,
                                                    Message* output) {
   io::ArrayInputStream input_stream(input.data(), input.size());
@@ -1903,7 +1903,7 @@ bool TextFormat::Parser::ParseFieldValueFromString(absl::string_view input,
   return Parser().Merge(input, output);
 }
 
-/* static */ bool TextFormat::ParseFromString(absl::string_view input,
+/* static */ bool TextFormat::ParseFromString(std::string_view input,
                                               Message* output) {
   return Parser().ParseFromString(input, output);
 }
@@ -1913,7 +1913,7 @@ bool TextFormat::Parser::ParseFieldValueFromString(absl::string_view input,
   return Parser().ParseFromCord(input, output);
 }
 
-/* static */ bool TextFormat::MergeFromString(absl::string_view input,
+/* static */ bool TextFormat::MergeFromString(std::string_view input,
                                               Message* output) {
   return Parser().MergeFromString(input, output);
 }
@@ -2855,7 +2855,7 @@ void TextFormat::Printer::PrintFieldValue(const Message& message,
 }
 
 /* static */ bool TextFormat::ParseFieldValueFromString(
-    absl::string_view input, const FieldDescriptor* field, Message* message) {
+    std::string_view input, const FieldDescriptor* field, Message* message) {
   return Parser().ParseFieldValueFromString(input, field, message);
 }
 
@@ -2925,7 +2925,7 @@ void TextFormat::Printer::PrintUnknownFields(
       }
       case UnknownField::TYPE_LENGTH_DELIMITED: {
         OutOfLinePrintString(generator, field.number());
-        const absl::string_view value = field.length_delimited();
+        const std::string_view value = field.length_delimited();
         // We create a CodedInputStream so that we can adhere to our recursion
         // budget when we attempt to parse the data. UnknownFieldSet parsing is
         // recursive because of groups.

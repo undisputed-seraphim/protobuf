@@ -58,7 +58,7 @@ namespace protobuf {
 TEST(MESSAGE_TEST_NAME, AllSetMethodsOnStringField) {
   UNITTEST::TestAllTypes msg;
 
-  msg.set_optional_string(absl::string_view("Abcdef"));
+  msg.set_optional_string(std::string_view("Abcdef"));
   EXPECT_EQ(msg.optional_string(), "Abcdef");
 
   msg.set_optional_string("Asciiz");
@@ -84,7 +84,7 @@ TEST(MESSAGE_TEST_NAME, AllSetMethodsOnStringField) {
 TEST(MESSAGE_TEST_NAME, AllAddMethodsOnRepeatedStringField) {
   UNITTEST::TestAllTypes msg;
 
-  msg.add_repeated_string(absl::string_view("Abcdef"));
+  msg.add_repeated_string(std::string_view("Abcdef"));
   EXPECT_EQ(msg.repeated_string(0), "Abcdef");
   msg.clear_repeated_string();
 

@@ -16,7 +16,7 @@
 #include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/cord.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/unittest.pb.h"
 #include "google/protobuf/unittest_no_field_presence.pb.h"
@@ -425,7 +425,7 @@ TEST(NoFieldPresenceTest, ExtraZeroesInWireParseTest) {
   ExplicitForeignMessage source;
   source.set_c(0);
   std::string wire = source.SerializeAsString();
-  ASSERT_THAT(wire, StrEq(absl::string_view{"\x08\x00", 2}));
+  ASSERT_THAT(wire, StrEq(std::string_view{"\x08\x00", 2}));
 
   // The "parse" operation clears all fields before merging from wire.
   ASSERT_TRUE(dest.ParseFromString(wire));
@@ -446,7 +446,7 @@ TEST(NoFieldPresenceTest, ExtraZeroesInWireMergeTest) {
   ExplicitForeignMessage source;
   source.set_c(0);
   std::string wire = source.SerializeAsString();
-  ASSERT_THAT(wire, StrEq(absl::string_view{"\x08\x00", 2}));
+  ASSERT_THAT(wire, StrEq(std::string_view{"\x08\x00", 2}));
 
   // TODO: b/356132170 -- Add conformance tests to ensure this behaviour is
   //                      well-defined.
@@ -465,7 +465,7 @@ TEST(NoFieldPresenceTest, ExtraZeroesInWireLastWins) {
   // check that, when the same field is present multiple times on the wire, we
   // always take the last one -- even if it is a zero.
 
-  absl::string_view wire{"\x08\x01\x08\x00", /*len=*/4};  // note the null-byte.
+  std::string_view wire{"\x08\x01\x08\x00", /*len=*/4};  // note the null-byte.
   ForeignMessage dest;
 
   // TODO: b/356132170 -- Add conformance tests to ensure this behaviour is

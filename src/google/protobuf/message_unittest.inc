@@ -399,14 +399,14 @@ TEST(MESSAGE_TEST_NAME, ParseFailNonCanonicalZeroTag) {
   const char encoded[] = {"\n\x3\x80\0\0"};
   UNITTEST::NestedTestAllTypes parsed;
   EXPECT_FALSE(parsed.ParsePartialFromString(
-      absl::string_view{encoded, sizeof(encoded) - 1}));
+      std::string_view{encoded, sizeof(encoded) - 1}));
 }
 
 TEST(MESSAGE_TEST_NAME, ParseFailNonCanonicalZeroField) {
   const char encoded[] = {"\012\x6\205\0\0\0\0\0"};
   UNITTEST::NestedTestAllTypes parsed;
   EXPECT_FALSE(parsed.ParsePartialFromString(
-      absl::string_view{encoded, sizeof(encoded) - 1}));
+      std::string_view{encoded, sizeof(encoded) - 1}));
 }
 
 TEST(MESSAGE_TEST_NAME, NestedExplicitLazyExceedRecursionLimit) {
@@ -1871,7 +1871,7 @@ std::string EncodeStringValue(int number, const std::string& value) {
 
 class TestInputStream final : public io::ZeroCopyInputStream {
  public:
-  explicit TestInputStream(absl::string_view payload, size_t break_pos)
+  explicit TestInputStream(std::string_view payload, size_t break_pos)
       : payload_(payload), break_pos_(break_pos) {}
 
   bool Next(const void** data, int* size) override {
@@ -1897,7 +1897,7 @@ class TestInputStream final : public io::ZeroCopyInputStream {
   }
 
  private:
-  absl::string_view payload_;
+  std::string_view payload_;
   size_t break_pos_;
 };
 }  // namespace

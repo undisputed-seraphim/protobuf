@@ -46,7 +46,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "absl/strings/strip.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/notification.h"
@@ -123,7 +123,7 @@ DescriptorProto* AddNestedMessage(DescriptorProto* parent,
 }
 
 EnumDescriptorProto* AddEnum(FileDescriptorProto* file,
-                             absl::string_view name) {
+                             std::string_view name) {
   EnumDescriptorProto* result = file->add_enum_type();
   result->set_name(name);
   return result;
@@ -227,7 +227,7 @@ MethodDescriptorProto* AddMethod(ServiceDescriptorProto* service,
 
 // Empty enums technically aren't allowed.  We need to insert a dummy value
 // into them.
-void AddEmptyEnum(FileDescriptorProto* file, absl::string_view name) {
+void AddEmptyEnum(FileDescriptorProto* file, std::string_view name) {
   AddEnumValue(AddEnum(file, name), absl::StrCat(name, "_DUMMY"), 1);
 }
 
@@ -240,18 +240,18 @@ class MockErrorCollector : public DescriptorPool::ErrorCollector {
   std::string warning_text_;
 
   // implements ErrorCollector ---------------------------------------
-  void RecordError(absl::string_view filename, absl::string_view element_name,
+  void RecordError(std::string_view filename, std::string_view element_name,
                    const Message* descriptor, ErrorLocation location,
-                   absl::string_view message) override {
+                   std::string_view message) override {
     absl::SubstituteAndAppend(&text_, "$0: $1: $2: $3\n", filename,
                               element_name, ErrorLocationName(location),
                               message);
   }
 
   // implements ErrorCollector ---------------------------------------
-  void RecordWarning(absl::string_view filename, absl::string_view element_name,
+  void RecordWarning(std::string_view filename, std::string_view element_name,
                      const Message* descriptor, ErrorLocation location,
-                     absl::string_view message) override {
+                     std::string_view message) override {
     absl::SubstituteAndAppend(&warning_text_, "$0: $1: $2: $3\n", filename,
                               element_name, ErrorLocationName(location),
                               message);
@@ -568,8 +568,8 @@ TEST_F(FileDescriptorTest, CopyHeadingTo) {
 }
 
 void ExtractDebugString(
-    const FileDescriptor* file, absl::flat_hash_set<absl::string_view>* visited,
-    std::vector<std::pair<absl::string_view, std::string>>* debug_strings) {
+    const FileDescriptor* file, absl::flat_hash_set<std::string_view>* visited,
+    std::vector<std::pair<std::string_view, std::string>>* debug_strings) {
   if (!visited->insert(file->name()).second) {
     return;
   }
@@ -582,7 +582,7 @@ void ExtractDebugString(
 class SimpleErrorCollector : public io::ErrorCollector {
  public:
   // implements ErrorCollector ---------------------------------------
-  void RecordError(int line, int column, absl::string_view message) override {
+  void RecordError(int line, int column, std::string_view message) override {
     last_error_ = absl::StrFormat("%d:%d:%s", line, column, message);
   }
 
@@ -594,8 +594,8 @@ class SimpleErrorCollector : public io::ErrorCollector {
 // Test that the result of FileDescriptor::DebugString() can be used to create
 // the original descriptors.
 TEST_F(FileDescriptorTest, DebugStringRoundTrip) {
-  absl::flat_hash_set<absl::string_view> visited;
-  std::vector<std::pair<absl::string_view, std::string>> debug_strings;
+  absl::flat_hash_set<std::string_view> visited;
+  std::vector<std::pair<std::string_view, std::string>> debug_strings;
   ExtractDebugString(protobuf_unittest::TestAllTypes::descriptor()->file(),
                      &visited, &debug_strings);
   ExtractDebugString(
@@ -607,7 +607,7 @@ TEST_F(FileDescriptorTest, DebugStringRoundTrip) {
 
   DescriptorPool pool;
   for (size_t i = 0; i < debug_strings.size(); ++i) {
-    const absl::string_view name = debug_strings[i].first;
+    const std::string_view name = debug_strings[i].first;
     const std::string& content = debug_strings[i].second;
     io::ArrayInputStream input_stream(content.data(), content.size());
     SimpleErrorCollector error_collector;
@@ -848,7 +848,7 @@ TEST_F(DescriptorTest, ContainingType) {
 
 TEST_F(DescriptorTest, FieldNamesDedup) {
   const auto collect_unique_names = [](const FieldDescriptor* field) {
-    absl::btree_set<absl::string_view> names{
+    absl::btree_set<std::string_view> names{
         field->name(), field->lowercase_name(), field->camelcase_name(),
         field->json_name()};
     // Verify that we have the same number of string objects as we have string
@@ -4031,14 +4031,14 @@ class ValidationErrorTest : public testing::Test {
   }
   // Parse file_text as a FileDescriptorProto in text format and add it
   // to the DescriptorPool.  Expect no errors.
-  const FileDescriptor* BuildFile(absl::string_view file_text) {
+  const FileDescriptor* BuildFile(std::string_view file_text) {
     FileDescriptorProto file_proto;
     EXPECT_TRUE(TextFormat::ParseFromString(file_text, &file_proto));
     return ABSL_DIE_IF_NULL(pool_.BuildFile(file_proto));
   }
 
-  FileDescriptorProto ParseFile(absl::string_view file_name,
-                                absl::string_view file_text) {
+  FileDescriptorProto ParseFile(std::string_view file_name,
+                                std::string_view file_text) {
     io::ArrayInputStream input_stream(file_text.data(), file_text.size());
     SimpleErrorCollector error_collector;
     io::Tokenizer tokenizer(&input_stream, &error_collector);
@@ -4053,8 +4053,8 @@ class ValidationErrorTest : public testing::Test {
     return proto;
   }
 
-  const FileDescriptor* ParseAndBuildFile(absl::string_view file_name,
-                                          absl::string_view file_text) {
+  const FileDescriptor* ParseAndBuildFile(std::string_view file_name,
+                                          std::string_view file_text) {
     return pool_.BuildFile(ParseFile(file_name, file_text));
   }
 
@@ -4081,9 +4081,9 @@ class ValidationErrorTest : public testing::Test {
 
   // Parse a proto file and build it.  Expect errors to be produced which match
   // the given error text.
-  void ParseAndBuildFileWithErrors(absl::string_view file_name,
-                                   absl::string_view file_text,
-                                   absl::string_view expected_errors) {
+  void ParseAndBuildFileWithErrors(std::string_view file_name,
+                                   std::string_view file_text,
+                                   std::string_view expected_errors) {
     MockErrorCollector error_collector;
     EXPECT_TRUE(pool_.BuildFileCollectingErrors(ParseFile(file_name, file_text),
                                                 &error_collector) == nullptr);
@@ -4117,7 +4117,7 @@ class ValidationErrorTest : public testing::Test {
   }
 
   void BuildDescriptorMessagesInTestPoolWithErrors(
-      absl::string_view expected_errors) {
+      std::string_view expected_errors) {
     FileDescriptorProto file_proto;
     DescriptorProto::descriptor()->file()->CopyTo(&file_proto);
     MockErrorCollector error_collector;
@@ -10238,7 +10238,7 @@ TEST_F(FeaturesTest, InvalidFieldRepeatedImplicit) {
 }
 
 TEST_F(FeaturesTest, InvalidFieldMapImplicit) {
-  constexpr absl::string_view kProtoFile = R"schema(
+  constexpr std::string_view kProtoFile = R"schema(
     edition = "2023";
 
     message Foo {
@@ -10480,7 +10480,7 @@ TEST_F(FeaturesTest, InvalidFieldNonMessageWithMessageEncoding) {
 }
 
 TEST_F(FeaturesTest, InvalidFieldMapWithMessageEncoding) {
-  constexpr absl::string_view kProtoFile = R"schema(
+  constexpr std::string_view kProtoFile = R"schema(
     edition = "2023";
 
     message Foo {
@@ -11048,10 +11048,10 @@ TEST_F(FeaturesTest, FutureFeatureDefault) {
 class FeaturesDebugStringTest
     : public FeaturesTest,
       public testing::WithParamInterface<
-          std::tuple<absl::string_view, absl::string_view>> {
+          std::tuple<std::string_view, std::string_view>> {
  protected:
-  const FileDescriptor* LoadFile(absl::string_view name,
-                                 absl::string_view content) {
+  const FileDescriptor* LoadFile(std::string_view name,
+                                 std::string_view content) {
     io::ArrayInputStream input_stream(content.data(), content.size());
     SimpleErrorCollector error_collector;
     io::Tokenizer tokenizer(&input_stream, &error_collector);
@@ -11595,7 +11595,7 @@ using ExtensionDeclarationsTest =
 // For OSS, this is a function that directly returns the parsed
 // FileDescriptorProto.
 absl::StatusOr<FileDescriptorProto> ParameterizeFileProto(
-    absl::string_view file_text, const ExtensionDeclarationsTestParams& param) {
+    std::string_view file_text, const ExtensionDeclarationsTestParams& param) {
   (void)file_text;  // Parameter is used by Google-internal code.
   (void)param;      // Parameter is used by Google-internal code.
   FileDescriptorProto file_proto;
@@ -12086,7 +12086,7 @@ TEST_F(ValidationErrorTest, PackageTooLong) {
 // DescriptorDatabase
 
 static void AddToDatabase(SimpleDescriptorDatabase* database,
-                          absl::string_view file_text) {
+                          std::string_view file_text) {
   FileDescriptorProto file_proto;
   EXPECT_TRUE(TextFormat::ParseFromString(file_text, &file_proto));
   database->Add(file_proto);
@@ -12681,8 +12681,8 @@ class ExponentialErrorDatabase : public DescriptorDatabase {
   }
 
  private:
-  void FullMatch(absl::string_view name, absl::string_view begin_with,
-                 absl::string_view end_with, int32_t* file_num) {
+  void FullMatch(std::string_view name, std::string_view begin_with,
+                 std::string_view end_with, int32_t* file_num) {
     if (!absl::ConsumePrefix(&name, begin_with)) return;
     if (!absl::ConsumeSuffix(&name, end_with)) return;
     ABSL_CHECK(absl::SimpleAtoi(name, file_num));
@@ -12756,9 +12756,9 @@ class AbortingErrorCollector : public DescriptorPool::ErrorCollector {
   AbortingErrorCollector(const AbortingErrorCollector&) = delete;
   AbortingErrorCollector& operator=(const AbortingErrorCollector&) = delete;
 
-  void RecordError(absl::string_view filename, absl::string_view element_name,
+  void RecordError(std::string_view filename, std::string_view element_name,
                    const Message* message, ErrorLocation location,
-                   absl::string_view error_message) override {
+                   std::string_view error_message) override {
     ABSL_LOG(FATAL) << "AddError() called unexpectedly: " << filename << " ["
                     << element_name << "]: " << error_message;
   }
@@ -12772,7 +12772,7 @@ class SingletonSourceTree : public compiler::SourceTree {
   SingletonSourceTree(const SingletonSourceTree&) = delete;
   SingletonSourceTree& operator=(const SingletonSourceTree&) = delete;
 
-  io::ZeroCopyInputStream* Open(absl::string_view filename) override {
+  io::ZeroCopyInputStream* Open(std::string_view filename) override {
     return filename == filename_
                ? new io::ArrayInputStream(contents_.data(), contents_.size())
                : nullptr;
@@ -13427,14 +13427,14 @@ class LazilyBuildDependenciesTest : public testing::Test {
     pool_.InternalSetLazilyBuildDependencies();
   }
 
-  void ParseProtoAndAddToDb(absl::string_view proto) {
+  void ParseProtoAndAddToDb(std::string_view proto) {
     FileDescriptorProto tmp;
     ASSERT_TRUE(TextFormat::ParseFromString(proto, &tmp));
     db_.Add(tmp);
   }
 
-  void AddSimpleMessageProtoFileToDb(absl::string_view file_name,
-                                     absl::string_view message_name) {
+  void AddSimpleMessageProtoFileToDb(std::string_view file_name,
+                                     std::string_view message_name) {
     ParseProtoAndAddToDb(absl::StrFormat(
         R"pb(
           name: '%s.proto'
@@ -13446,9 +13446,9 @@ class LazilyBuildDependenciesTest : public testing::Test {
         file_name, message_name));
   }
 
-  void AddSimpleEnumProtoFileToDb(absl::string_view file_name,
-                                  absl::string_view enum_name,
-                                  absl::string_view enum_value_name) {
+  void AddSimpleEnumProtoFileToDb(std::string_view file_name,
+                                  std::string_view enum_name,
+                                  std::string_view enum_value_name) {
     ParseProtoAndAddToDb(absl::StrCat("name: '", file_name,
                                       ".proto' "
                                       "package: 'protobuf_unittest' "

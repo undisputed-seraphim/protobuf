@@ -40,7 +40,7 @@ namespace google {
 namespace protobuf {
 namespace internal {
 template <typename T>
-::absl::string_view GetAnyMessageName();
+::std::string_view GetAnyMessageName();
 }  // namespace internal
 }  // namespace protobuf
 }  // namespace google
@@ -190,9 +190,9 @@ class PROTOBUF_EXPORT SourceContext final : public ::google::protobuf::Message
   void InternalSwap(SourceContext* other);
  private:
   template <typename T>
-  friend ::absl::string_view(
+  friend ::std::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "google.protobuf.SourceContext"; }
+  static ::std::string_view FullMessageName() { return "google.protobuf.SourceContext"; }
 
  protected:
   explicit SourceContext(::google::protobuf::Arena* arena);

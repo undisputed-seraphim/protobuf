@@ -14,7 +14,7 @@
 #include <type_traits>
 
 #include "absl/hash/hash.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/message_lite.h"
 
 

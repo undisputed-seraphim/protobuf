@@ -28,8 +28,8 @@
 #include "absl/strings/cord_buffer.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include <string_view>
+#include <optional>
 #include "absl/types/span.h"
 #include "google/protobuf/arena.h"
 #include "google/protobuf/generated_message_tctable_impl.h"
@@ -97,7 +97,7 @@ internal::GetTypeNameReturnType MessageLite::GetTypeName() const {
   return internal::GetTypeNameReturnType(TypeId::Get(*this).name());
 }
 
-absl::string_view TypeId::name() const {
+std::string_view TypeId::name() const {
   if (!data_->is_lite) {
     // For !LITE messages, we use the descriptor method function.
     return data_->full().descriptor_methods->get_type_name(data_);
@@ -166,7 +166,7 @@ void ByteSizeConsistencyError(size_t byte_size_before_serialization,
   ABSL_LOG(FATAL) << "This shouldn't be called if all the sizes are equal.";
 }
 
-std::string InitializationErrorMessage(absl::string_view action,
+std::string InitializationErrorMessage(std::string_view action,
                                        const MessageLite& message) {
   return absl::StrCat("Can't ", action, " message of type \"",
                       message.GetTypeName(),
@@ -174,8 +174,8 @@ std::string InitializationErrorMessage(absl::string_view action,
                       message.InitializationErrorString());
 }
 
-inline absl::string_view as_string_view(const void* data, int size) {
-  return absl::string_view(static_cast<const char*>(data), size);
+inline std::string_view as_string_view(const void* data, int size) {
+  return std::string_view(static_cast<const char*>(data), size);
 }
 
 // Returns true if all required fields are present / have values.
@@ -209,7 +209,7 @@ void FailDynamicCast(const MessageLite& from, const MessageLite& to) {
 }
 
 template <bool aliasing>
-bool MergeFromImpl(absl::string_view input, MessageLite* msg,
+bool MergeFromImpl(std::string_view input, MessageLite* msg,
                    const internal::TcParseTableBase* tc_table,
                    MessageLite::ParseFlags parse_flags) {
   const char* ptr;
@@ -254,10 +254,10 @@ bool MergeFromImpl(BoundedZCIS input, MessageLite* msg,
   return false;
 }
 
-template bool MergeFromImpl<false>(absl::string_view input, MessageLite* msg,
+template bool MergeFromImpl<false>(std::string_view input, MessageLite* msg,
                                    const internal::TcParseTableBase* tc_table,
                                    MessageLite::ParseFlags parse_flags);
-template bool MergeFromImpl<true>(absl::string_view input, MessageLite* msg,
+template bool MergeFromImpl<true>(std::string_view input, MessageLite* msg,
                                   const internal::TcParseTableBase* tc_table,
                                   MessageLite::ParseFlags parse_flags);
 template bool MergeFromImpl<false>(io::ZeroCopyInputStream* input,
@@ -397,11 +397,11 @@ bool MessageLite::ParsePartialFromBoundedZeroCopyStream(
   return ParseFrom<kParsePartial>(internal::BoundedZCIS{input, size});
 }
 
-bool MessageLite::ParseFromString(absl::string_view data) {
+bool MessageLite::ParseFromString(std::string_view data) {
   return ParseFrom<kParse>(data);
 }
 
-bool MessageLite::ParsePartialFromString(absl::string_view data) {
+bool MessageLite::ParsePartialFromString(std::string_view data) {
   return ParseFrom<kParsePartial>(data);
 }
 
@@ -413,7 +413,7 @@ bool MessageLite::ParsePartialFromArray(const void* data, int size) {
   return ParseFrom<kParsePartial>(as_string_view(data, size));
 }
 
-bool MessageLite::MergeFromString(absl::string_view data) {
+bool MessageLite::MergeFromString(std::string_view data) {
   return ParseFrom<kMerge>(data);
 }
 
@@ -426,7 +426,7 @@ struct SourceWrapper<absl::Cord> {
   template <bool alias>
   bool MergeInto(MessageLite* msg, const internal::TcParseTableBase* tc_table,
                  MessageLite::ParseFlags parse_flags) const {
-    absl::optional<absl::string_view> flat = cord->TryFlat();
+    std::optional<std::string_view> flat = cord->TryFlat();
     if (flat && flat->size() <= ParseContext::kMaxCordBytesToCopy) {
       return MergeFromImpl<alias>(*flat, msg, tc_table, parse_flags);
     } else {

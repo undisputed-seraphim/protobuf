@@ -16,7 +16,7 @@
 #include <type_traits>
 
 #include "absl/base/casts.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/map.h"
 #include "google/protobuf/map_field.h"
 #include "google/protobuf/map_type_handler.h"
@@ -51,7 +51,7 @@ inline uint64_t UnwrapMapKeyImpl(const MapKey& map_key, const uint64_t*) {
 inline bool UnwrapMapKeyImpl(const MapKey& map_key, const bool*) {
   return map_key.GetBoolValue();
 }
-inline absl::string_view UnwrapMapKeyImpl(const MapKey& map_key,
+inline std::string_view UnwrapMapKeyImpl(const MapKey& map_key,
                                           const std::string*) {
   return map_key.GetStringValue();
 }

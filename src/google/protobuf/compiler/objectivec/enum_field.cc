@@ -13,7 +13,7 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include <string_view>
 #include "google/protobuf/compiler/objectivec/field.h"
 #include "google/protobuf/compiler/objectivec/names.h"
 #include "google/protobuf/compiler/objectivec/options.h"
@@ -30,7 +30,7 @@ namespace {
 void SetEnumVariables(
     const FieldDescriptor* descriptor,
     const GenerationOptions& generation_options,
-    absl::flat_hash_map<absl::string_view, std::string>* variables) {
+    absl::flat_hash_map<std::string_view, std::string>* variables) {
   const std::string type = EnumName(descriptor->enum_type());
   const std::string enum_desc_func = absl::StrCat(type, "_EnumDescriptor");
   (*variables)["enum_name"] = type;
