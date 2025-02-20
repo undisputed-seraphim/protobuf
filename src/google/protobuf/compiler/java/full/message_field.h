@@ -85,8 +85,8 @@ class ImmutableMessageFieldGenerator : public ImmutableFieldGenerator {
       io::Printer* printer, const char* method_prototype,
       const char* regular_case, const char* nested_builder_case,
       const char* trailing_code,
-      absl::optional<io::AnnotationCollector::Semantic> semantic =
-          absl::nullopt) const;
+      std::optional<io::AnnotationCollector::Semantic> semantic =
+          std::nullopt) const;
 
  private:
   void GenerateKotlinOrNull(io::Printer* printer) const;
@@ -155,8 +155,8 @@ class RepeatedImmutableMessageFieldGenerator
       io::Printer* printer, const char* method_prototype,
       const char* regular_case, const char* nested_builder_case,
       const char* trailing_code,
-      absl::optional<io::AnnotationCollector::Semantic> semantic =
-          absl::nullopt) const override;
+      std::optional<io::AnnotationCollector::Semantic> semantic =
+          std::nullopt) const override;
 };
 
 }  // namespace java

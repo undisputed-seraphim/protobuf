@@ -207,7 +207,7 @@ inline std::optional<std::string_view> RttiTypeName() {
 #if PROTOBUF_RTTI
   return typeid(T).name();
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

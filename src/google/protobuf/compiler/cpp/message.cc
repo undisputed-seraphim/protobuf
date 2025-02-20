@@ -5221,7 +5221,7 @@ void MessageGenerator::GenerateIsInitialized(io::Printer* p) {
                                       "!NeedsIsInitialized"
                                    << field->full_name();
                              }))
-                       : absl::nullopt;
+                       : std::nullopt;
                f.GenerateIsInitialized(p);
              }
            }},

@@ -195,9 +195,9 @@ TEST(FastVarints, NameHere) {
             fn = &TcParser::FastV64S1;
             break;
         }
-        fallback_ptr_received = absl::nullopt;
-        fallback_hasbits_received = absl::nullopt;
-        fallback_tag_received = absl::nullopt;
+        fallback_ptr_received = std::nullopt;
+        fallback_hasbits_received = std::nullopt;
+        fallback_tag_received = std::nullopt;
         end_ptr = fn(reinterpret_cast<MessageLite*>(fake_msg), ptr, &ctx,
                      Xor2SerializedBytes(parse_table.fast_entries[0].bits, ptr),
                      &parse_table.header, /*hasbits=*/0);

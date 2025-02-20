@@ -211,7 +211,7 @@ template <typename Start, typename End, typename FilePath, typename Path,
           typename Semantic = std::optional<AnnotationCollector::Semantic>>
 testing::Matcher<FakeAnnotationCollector::Record> Annotation(
     Start start, End end, FilePath file_path, Path path,
-    Semantic semantic = absl::nullopt) {
+    Semantic semantic = std::nullopt) {
   return AllOf(
       Field("start", &FakeAnnotationCollector::Record::start, start),
       Field("end", &FakeAnnotationCollector::Record::end, end),

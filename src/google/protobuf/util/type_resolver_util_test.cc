@@ -423,7 +423,7 @@ class DescriptorPoolTypeResolverSyntaxTest : public testing::Test {
 
   const FileDescriptor* BuildFile(
       std::string_view syntax,
-      absl::optional<Edition> edition = absl::nullopt) {
+      std::optional<Edition> edition = std::nullopt) {
     FileDescriptorProto proto;
     proto.set_package("test");
     proto.set_name("foo");

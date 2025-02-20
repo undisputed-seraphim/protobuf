@@ -51,7 +51,7 @@
 #include "absl/strings/str_format.h"
 #include <string_view>
 #include "absl/synchronization/mutex.h"
-#include "absl/types/optional.h"
+#include <optional>
 #include "google/protobuf/descriptor_lite.h"
 #include "google/protobuf/extension_set.h"
 #include "google/protobuf/port.h"

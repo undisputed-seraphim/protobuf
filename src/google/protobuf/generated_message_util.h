@@ -383,7 +383,7 @@ constexpr std::optional<uintptr_t> EncodePlacementArenaOffsets(
   for (size_t offset : offsets) {
     offset /= sizeof(Arena*);
     if (offset >= sizeof(arena_bits) * 8) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     arena_bits |= uintptr_t{1} << offset;
   }

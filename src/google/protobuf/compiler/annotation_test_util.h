@@ -80,7 +80,7 @@ bool AtLeastOneAnnotationMatchesSubstring(
     const std::vector<const GeneratedCodeInfo::Annotation*>& annotations,
     const std::string& expected_text,
     std::optional<GeneratedCodeInfo::Annotation::Semantic> expected_semantic =
-        absl::nullopt);
+        std::nullopt);
 
 // Returns true if the provided annotation covers a given substring in
 // file_content.

@@ -41,7 +41,7 @@
 #include <string_view>
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
-#include "absl/types/optional.h"
+#include <optional>
 #include "absl/types/span.h"
 #include "google/protobuf/arenastring.h"
 #include "google/protobuf/compiler/code_generator.h"
@@ -1928,7 +1928,7 @@ bool HasMessageFieldOrExtension(const Descriptor* desc) {
 
 std::vector<io::Printer::Sub> AnnotatedAccessors(
     const FieldDescriptor* field, absl::Span<const std::string_view> prefixes,
-    absl::optional<google::protobuf::io::AnnotationCollector::Semantic> semantic) {
+    std::optional<google::protobuf::io::AnnotationCollector::Semantic> semantic) {
   auto field_name = FieldName(field);
 
   std::vector<io::Printer::Sub> vars;

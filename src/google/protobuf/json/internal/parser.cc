@@ -335,7 +335,7 @@ absl::StatusOr<std::optional<int32_t>> ParseEnumFromStr(JsonLexer& lex,
   if (absl::SimpleAtoi(str.AsView(), &i)) {
     return std::optional<int32_t>(i);
   } else if (lex.options().ignore_unknown_fields) {
-    return {absl::nullopt};
+    return {std::nullopt};
   }
 
   return value.status();
@@ -358,7 +358,7 @@ absl::StatusOr<std::optional<int32_t>> ParseEnum(JsonLexer& lex,
       auto e = ParseEnumFromStr<Traits>(lex, str->value, field);
       RETURN_IF_ERROR(e.status());
       if (!e->has_value()) {
-        return {absl::nullopt};
+        return {std::nullopt};
       }
       n = **e;
       break;
@@ -722,7 +722,7 @@ std::optional<uint32_t> TakeTimeDigitsWithSuffixAndAdvance(
   int limit = max_digits;
   while (!data.empty()) {
     if (limit-- < 0) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     uint32_t digit = data[0] - '0';
     if (digit >= 10) {
@@ -734,7 +734,7 @@ std::optional<uint32_t> TakeTimeDigitsWithSuffixAndAdvance(
     data = data.substr(1);
   }
   if (!absl::StartsWith(data, end)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   data = data.substr(end.size());
@@ -754,7 +754,7 @@ std::optional<int32_t> TakeNanosAndAdvance(std::string_view& data) {
     auto digits = data.substr(1, frac_digits);
     if (frac_digits == 0 || frac_digits > 9 ||
         !absl::SimpleAtoi(digits, &frac_secs)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     data = data.substr(frac_digits + 1);
   }

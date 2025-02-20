@@ -212,7 +212,7 @@ class UntypedMessage final {
   explicit UntypedMessage(const ResolverPool::Message* desc) : desc_(desc) {}
 
   absl::Status Decode(io::CodedInputStream& stream,
-                      std::optional<int32_t> current_group = absl::nullopt);
+                      std::optional<int32_t> current_group = std::nullopt);
 
   absl::Status DecodeVarint(io::CodedInputStream& stream,
                             const ResolverPool::Field& field);

@@ -362,7 +362,7 @@ bool IsFieldEligibleForFastParsing(
 
 std::optional<uint32_t> GetEndGroupTag(const Descriptor* descriptor) {
   auto* parent = descriptor->containing_type();
-  if (parent == nullptr) return absl::nullopt;
+  if (parent == nullptr) return std::nullopt;
   for (int i = 0; i < parent->field_count(); ++i) {
     auto* field = parent->field(i);
     if (field->type() == field->TYPE_GROUP &&
@@ -371,7 +371,7 @@ std::optional<uint32_t> GetEndGroupTag(const Descriptor* descriptor) {
                                      WireFormatLite::WIRETYPE_END_GROUP);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 uint32_t RecodeTagForFastParsing(uint32_t tag) {

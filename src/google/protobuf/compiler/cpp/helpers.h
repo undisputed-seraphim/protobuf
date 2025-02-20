@@ -1141,7 +1141,7 @@ bool HasMessageFieldOrExtension(const Descriptor* desc);
 std::vector<io::Printer::Sub> AnnotatedAccessors(
     const FieldDescriptor* field, absl::Span<const std::string_view> prefixes,
     std::optional<google::protobuf::io::AnnotationCollector::Semantic> semantic =
-        absl::nullopt);
+        std::nullopt);
 
 // Check whether `file` represents the .proto file FileDescriptorProto and
 // friends. This file needs special handling because it must be usable during

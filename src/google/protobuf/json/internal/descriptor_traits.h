@@ -148,7 +148,7 @@ struct Proto2Descriptor {
     if (const auto* field = d.FindFieldByNumber(number)) {
       return field;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static Field MustHaveField(const Desc& d, int32_t number,
@@ -183,7 +183,7 @@ struct Proto2Descriptor {
       }
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static Field KeyField(const Desc& d) { return d.map_key(); }
@@ -198,7 +198,7 @@ struct Proto2Descriptor {
                                                std::string_view name) {
     auto* field = d.file()->pool()->FindExtensionByName(name);
     if (field == nullptr) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return field;
   }
@@ -329,7 +329,7 @@ struct Proto3Type {
 
   static std::optional<Field> FieldByNumber(const Desc& d, int32_t number) {
     const auto* f = d.FindField(number);
-    return f == nullptr ? absl::nullopt : absl::make_optional(f);
+    return f == nullptr ? std::nullopt : absl::make_optional(f);
   }
 
   static Field MustHaveField(const Desc& d, int32_t number,
@@ -350,7 +350,7 @@ struct Proto3Type {
   static std::optional<Field> FieldByName(const Desc& d,
                                            std::string_view name) {
     const auto* f = d.FindField(name);
-    return f == nullptr ? absl::nullopt : absl::make_optional(f);
+    return f == nullptr ? std::nullopt : absl::make_optional(f);
   }
 
   static Field KeyField(const Desc& d) { return &d.FieldsByIndex()[0]; }
@@ -367,7 +367,7 @@ struct Proto3Type {
                                                std::string_view name) {
     // type.proto cannot represent extensions, so this function always
     // fails.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   /// Functions for introspecting fields. ///
